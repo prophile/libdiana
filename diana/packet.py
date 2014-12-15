@@ -34,12 +34,14 @@ class VersionPacket:
         self.patch = patch
 
     def encode(self):
-        return struct.pack('<fIII', float('{}.{}'.format(self.major, self.minor)),
+        return struct.pack('<IfIII', 0,
+                                     float('{}.{}'.format(self.major, self.minor)),
                                     self.major, self.minor, self.patch)
 
     @classmethod
     def decode(cls, packet):
-        legacy_version, major, minor, patch = struct.unpack('<fIII', packet)
+        print("Decoding version packet: {0!r}".format(packet))
+        unknown_1, legacy_version, major, minor, patch = struct.unpack('<IfIII', packet)
         return cls(major, minor, patch)
 
 def encode(packet, provenance=PacketProvenance.client):
