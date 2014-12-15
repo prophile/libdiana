@@ -65,6 +65,17 @@ class DifficultyPacket:
         difficulty, game_type_raw = struct.unpack('<II', packet)
         return cls(difficulty, GameType(game_type_raw))
 
+@packet(0xf5821226)
+class HeartbeatPacket:
+    def encode(self):
+        return b''
+
+    @classmethod
+    def decode(cls, packet):
+        if packet != b'':
+            raise ValueError('Payload in heartbeat')
+        return cls()
+
 def encode(packet, provenance=PacketProvenance.client):
     encoded_block = packet.encode()
     block_len = len(encoded_block)

@@ -62,3 +62,7 @@ def test_difficulty_decode():
     eq_(dp.difficulty, 10)
     eq_(dp.game_type, p.GameType.double_front)
 
+def test_heartbeat_encode():
+    hp = p.HeartbeatPacket()
+    eq_(hp.encode(), b'')
+
