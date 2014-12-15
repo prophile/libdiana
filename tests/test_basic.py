@@ -91,3 +91,12 @@ def test_intel_decode():
     eq_(ip.object, 0xaabbccdd)
     eq_(ip.intel, 'bees')
 
+def test_gm_popup_encode():
+    pp = p.PopupPacket(message='bees')
+    eq_(pp.encode(), b'\x0a\x00\x00\x00\x05\x00\x00\x00b\x00e\x00e\x00s\x00\x00\x00')
+
+def test_gm_popup_decode():
+    pp = p.GameMessagePacket.decode(b'\x0a\x00\x00\x00\x05\x00\x00\x00b\x00e\x00e\x00s\x00\x00\x00')
+    assert isinstance(pp, p.PopupPacket)
+    eq_(pp.message, 'bees')
+

@@ -128,6 +128,8 @@ class GameMessagePacket:
             return GameStartPacket.decode(packet)
         if subtype_index == 6:
             return GameEndPacket.decode(packet)
+        if subtype_index == 10:
+            return PopupPacket.decode(packet)
         raise SoftDecodeFailure()
 
 class GameStartPacket(GameMessagePacket):
@@ -155,6 +157,20 @@ class GameEndPacket(GameMessagePacket):
 
     def __str__(self):
         return '<GameEndPacket>'
+
+class PopupPacket(GameMessagePacket):
+    def __init__(self, message):
+        self.message = message
+
+    def encode(self):
+        return b'\x0a\x00\x00\x00' + pack_string(self.message)
+
+    @classmethod
+    def decode(cls, packet):
+        return cls(unpack_string(packet[4:]))
+
+    def __str__(self):
+        return '<PopupPacket message={0!r}>'.format(self.message)
 
 def encode(packet, provenance=PacketProvenance.client):
     encoded_block = packet.encode()
