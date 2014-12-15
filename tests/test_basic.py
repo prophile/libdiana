@@ -66,3 +66,11 @@ def test_heartbeat_encode():
     hp = p.HeartbeatPacket()
     eq_(hp.encode(), b'')
 
+def test_gm_start_encode():
+    sp = p.GameStartPacket()
+    eq_(sp.encode(), b'\x00\x0a\x00\x00\x00\x00\x00\x00\x00')
+
+def test_gm_start_decode():
+    sp = p.GameMessagePacket.decode(b'\x00\x0a\x00\x00\x00\xf6\x03\x00\x00')
+    assert isinstance(sp, p.GameStartPacket)
+

@@ -1,6 +1,9 @@
 import struct
 from enum import Enum
 
+class SoftDecodeFailure(RuntimeError):
+    pass
+
 class PacketProvenance(Enum):
     server = 0x01
     client = 0x02
@@ -26,6 +29,9 @@ class WelcomePacket:
     def decode(cls, packet):
         return cls(packet.decode('ascii'))
 
+    def __str__(self):
+        return "<WelcomePacket {0!r}>".format(self.message)
+
 @packet(0xe548e74a)
 class VersionPacket:
     def __init__(self, major, minor, patch):
@@ -42,6 +48,9 @@ class VersionPacket:
     def decode(cls, packet):
         unknown_1, legacy_version, major, minor, patch = struct.unpack('<IfIII', packet)
         return cls(major, minor, patch)
+
+    def __str__(self):
+        return "<VersionPacket {}.{}.{}>".format(self.major, self.minor, self.patch)
 
 class GameType(Enum):
     siege = 0
@@ -65,6 +74,9 @@ class DifficultyPacket:
         difficulty, game_type_raw = struct.unpack('<II', packet)
         return cls(difficulty, GameType(game_type_raw))
 
+    def __str__(self):
+        return "<DifficultyPacket difficulty={} game_type={}>".format(self.difficulty, self.game_type)
+
 @packet(0xf5821226)
 class HeartbeatPacket:
     def encode(self):
@@ -75,6 +87,32 @@ class HeartbeatPacket:
         if packet != b'':
             raise ValueError('Payload in heartbeat')
         return cls()
+
+    def __str__(self):
+        return "<HeartbeatPacket>"
+
+@packet(0xf754c8fe)
+class GameMessagePacket:
+    @classmethod
+    def decode(cls, packet):
+        if not packet:
+            raise ValueError('No payload in game message')
+        if packet[0] == 0:
+            return GameStartPacket.decode(packet)
+        raise SoftDecodeFailure()
+
+class GameStartPacket(GameMessagePacket):
+    def encode(self):
+        return b'\x00\x0a\x00\x00\x00\x00\x00\x00\x00'
+
+    @classmethod
+    def decode(cls, packet):
+        if len(packet) != 9:
+            raise ValueError('Wrong packet length')
+        return cls()
+
+    def __str__(self):
+        return '<GameStartPacket>'
 
 def encode(packet, provenance=PacketProvenance.client):
     encoded_block = packet.encode()
@@ -107,7 +145,10 @@ def decode(packet, provenance=PacketProvenance.server): # returns packets, trail
     rest, trailer = decode(trailer)
     if ptype in PACKETS:
         # we know how to decode this one
-        return [PACKETS[ptype].decode(payload)] + rest, trailer
+        try:
+            return [PACKETS[ptype].decode(payload)] + rest, trailer
+        except SoftDecodeFailure: # meaning unhandled bits
+            return rest, trailer
     else:
         return rest, trailer
 
