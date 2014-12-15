@@ -26,6 +26,22 @@ class WelcomePacket:
     def decode(cls, packet):
         return cls(packet.decode('ascii'))
 
+@packet(0xe548e74a)
+class VersionPacket:
+    def __init__(self, major, minor, patch):
+        self.major = major
+        self.minor = minor
+        self.patch = patch
+
+    def encode(self):
+        return struct.pack('<fIII', float('{}.{}'.format(self.major, self.minor)),
+                                    self.major, self.minor, self.patch)
+
+    @classmethod
+    def decode(cls, packet):
+        legacy_version, major, minor, patch = struct.unpack('<fIII', packet)
+        return cls(major, minor, patch)
+
 def encode(packet, provenance=PacketProvenance.client):
     encoded_block = packet.encode()
     block_len = len(encoded_block)

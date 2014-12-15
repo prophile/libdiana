@@ -38,3 +38,18 @@ def test_double_decode():
     eq_(len(decoded), 2)
     eq_(trailer, b'')
 
+def test_version_encode():
+    wp = p.VersionPacket(2, 1, 1)
+    encoding = p.encode(wp)
+    eq_(encoding, b'\xef\xbe\xad\xde\x28\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x14\x00\x00\x00\x4a\xe7\x48\xe5ff\x06@\x02\x00\x00\x00\x01\x00\x00\x00\x01\x00\x00\x00')
+
+def test_version_decode():
+    packet = b'\xef\xbe\xad\xde\x28\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x14\x00\x00\x00\x4a\xe7\x48\xe5\x00\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\x01\x00\x00\x00'
+    decoded, trailer = p.decode(packet)
+    eq_(len(decoded), 1)
+    decoded = decoded[0]
+    assert isinstance(decoded, p.VersionPacket)
+    eq_(decoded.major, 2)
+    eq_(decoded.minor, 1)
+    eq_(decoded.patch, 1)
+
