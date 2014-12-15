@@ -98,8 +98,11 @@ class GameMessagePacket:
     def decode(cls, packet):
         if not packet:
             raise ValueError('No payload in game message')
-        if packet[0] == 0:
+        subtype_index = packet[0]
+        if subtype_index == 0:
             return GameStartPacket.decode(packet)
+        if subtype_index == 6:
+            return GameEndPacket.decode(packet)
         raise SoftDecodeFailure()
 
 class GameStartPacket(GameMessagePacket):
@@ -114,6 +117,19 @@ class GameStartPacket(GameMessagePacket):
 
     def __str__(self):
         return '<GameStartPacket>'
+
+class GameEndPacket(GameMessagePacket):
+    def encode(self):
+        return b'\x06'
+
+    @classmethod
+    def decode(cls, packet):
+        if packet != b'\x06':
+            raise ValueError("Wrong packet content")
+        return cls()
+
+    def __str__(self):
+        return '<GameEndPacket>'
 
 def encode(packet, provenance=PacketProvenance.client):
     encoded_block = packet.encode()

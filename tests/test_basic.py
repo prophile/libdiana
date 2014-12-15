@@ -74,3 +74,11 @@ def test_gm_start_decode():
     sp = p.GameMessagePacket.decode(b'\x00\x0a\x00\x00\x00\xf6\x03\x00\x00')
     assert isinstance(sp, p.GameStartPacket)
 
+def test_gm_end_encode():
+    ep = p.GameEndPacket()
+    eq_(ep.encode(), b'\x06')
+
+def test_gm_end_decode():
+    ep = p.GameMessagePacket.decode(b'\x06')
+    assert isinstance(ep, p.GameEndPacket)
+
