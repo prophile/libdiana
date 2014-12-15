@@ -92,6 +92,31 @@ class HeartbeatPacket:
     def __str__(self):
         return "<HeartbeatPacket>"
 
+def pack_string(s):
+    packed = s.encode('utf-16le') + b'\x00\x00'
+    return struct.pack('<I', len(packed) // 2) + packed
+
+def unpack_string(s):
+    return s[4:-2].decode('utf-16le')
+
+@packet(0xee665279)
+class IntelPacket:
+    def __init__(self, object, intel):
+        self.object = object
+        self.intel = intel
+
+    def encode(self):
+        return struct.pack('<I', self.object) + pack_string(self.intel)
+
+    @classmethod
+    def decode(cls, packet):
+        object, = struct.unpack('<I', packet[:4])
+        intel = unpack_string(packet[4:])
+        return cls(object, intel)
+
+    def __str__(self):
+        return '<IntelPacket object={0} intel={1!r}>'.format(self.object, self.intel)
+
 @packet(0xf754c8fe)
 class GameMessagePacket:
     @classmethod

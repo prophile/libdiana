@@ -82,3 +82,12 @@ def test_gm_end_decode():
     ep = p.GameMessagePacket.decode(b'\x06\x00\x00\x00')
     assert isinstance(ep, p.GameEndPacket)
 
+def test_intel_encode():
+    ip = p.IntelPacket(object=0xaabbccdd, intel='bees')
+    eq_(ip.encode(), b'\xdd\xcc\xbb\xaa\x05\x00\x00\x00b\x00e\x00e\x00s\x00\x00\x00')
+
+def test_intel_decode():
+    ip = p.IntelPacket.decode(b'\xdd\xcc\xbb\xaa\x05\x00\x00\x00b\x00e\x00e\x00s\x00\x00\x00')
+    eq_(ip.object, 0xaabbccdd)
+    eq_(ip.intel, 'bees')
+
