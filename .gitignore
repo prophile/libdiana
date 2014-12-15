@@ -1,0 +1,7 @@
+venv
+__pycache__
+build
+dist
+libdiana.egg-info
+setuptools-*.zip
+setuptools-*.egg
