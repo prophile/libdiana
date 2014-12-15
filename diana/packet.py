@@ -1,5 +1,6 @@
 import struct
 from enum import Enum
+import sys
 
 class SoftDecodeFailure(RuntimeError):
     pass
@@ -126,6 +127,16 @@ def encode(packet, provenance=PacketProvenance.client):
                         packet.packet_id) + encoded_block)
 
 def decode(packet, provenance=PacketProvenance.server): # returns packets, trail
+    if not packet:
+        return [], b''
+    de_index = packet.find(0xef)
+    if de_index > 0:
+        sys.stderr.print("WARNING: skipping {} bytes of stream to resync\n".format(de_index))
+        sys.stderr.flush()
+        packet = packet[de_index:]
+    elif de_index == -1:
+        # wtf?
+        return [], b''
     buffer_len = len(packet)
     if buffer_len < 24:
         return [], packet
