@@ -107,11 +107,11 @@ class GameMessagePacket:
 
 class GameStartPacket(GameMessagePacket):
     def encode(self):
-        return b'\x00\x0a\x00\x00\x00\x00\x00\x00\x00'
+        return b'\x00\x00\x00\x00\x0a\x00\x00\x00\x00\x00\x00\x00'
 
     @classmethod
     def decode(cls, packet):
-        if len(packet) != 9:
+        if len(packet) != 12:
             raise ValueError('Wrong packet length')
         return cls()
 
