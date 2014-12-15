@@ -14,7 +14,6 @@ def test_create_socket():
 def test_transmit_socket():
     logs = {'sent': b''}
     def mock_connect(address):
-        eq_(address, ('artemis', 2210))
         class MockFD:
             def send(self, data):
                 logs['sent'] += data
@@ -25,7 +24,6 @@ def test_transmit_socket():
 
 def test_recv_socket():
     def mock_connect(address):
-        eq_(address, ('artemis', 2210))
         class MockFD:
             def recv(self, maxlen):
                 return b'\xef\xbe\xad\xde\x27\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x13\x00\x00\x00\xda\xb3\x04\x6dWelcome to eyes'
