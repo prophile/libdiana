@@ -106,12 +106,12 @@ class IntelPacket:
         self.intel = intel
 
     def encode(self):
-        return struct.pack('<I', self.object) + pack_string(self.intel)
+        return struct.pack('<Ib', self.object, 3) + pack_string(self.intel)
 
     @classmethod
     def decode(cls, packet):
-        object, = struct.unpack('<I', packet[:4])
-        intel = unpack_string(packet[4:])
+        object, unknown_1 = struct.unpack('<Ib', packet[:5])
+        intel = unpack_string(packet[5:])
         return cls(object, intel)
 
     def __str__(self):

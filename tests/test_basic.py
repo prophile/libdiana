@@ -84,10 +84,10 @@ def test_gm_end_decode():
 
 def test_intel_encode():
     ip = p.IntelPacket(object=0xaabbccdd, intel='bees')
-    eq_(ip.encode(), b'\xdd\xcc\xbb\xaa\x05\x00\x00\x00b\x00e\x00e\x00s\x00\x00\x00')
+    eq_(ip.encode(), b'\xdd\xcc\xbb\xaa\x03\x05\x00\x00\x00b\x00e\x00e\x00s\x00\x00\x00')
 
 def test_intel_decode():
-    ip = p.IntelPacket.decode(b'\xdd\xcc\xbb\xaa\x05\x00\x00\x00b\x00e\x00e\x00s\x00\x00\x00')
+    ip = p.IntelPacket.decode(b'\xdd\xcc\xbb\xaa\x03\x05\x00\x00\x00b\x00e\x00e\x00s\x00\x00\x00')
     eq_(ip.object, 0xaabbccdd)
     eq_(ip.intel, 'bees')
 
