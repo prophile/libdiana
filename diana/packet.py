@@ -43,6 +43,28 @@ class VersionPacket:
         unknown_1, legacy_version, major, minor, patch = struct.unpack('<IfIII', packet)
         return cls(major, minor, patch)
 
+class GameType(Enum):
+    siege = 0
+    single_front = 1
+    double_front = 2
+    deep_strike = 3
+    peacetime = 4
+    border_war = 5
+
+@packet(0x3de66711)
+class DifficultyPacket:
+    def __init__(self, difficulty, game_type):
+        self.difficulty = difficulty
+        self.game_type = game_type
+
+    def encode(self):
+        return struct.pack('<II', self.difficulty, self.game_type.value)
+
+    @classmethod
+    def decode(cls, packet):
+        difficulty, game_type_raw = struct.unpack('<II', packet)
+        return cls(difficulty, GameType(game_type_raw))
+
 def encode(packet, provenance=PacketProvenance.client):
     encoded_block = packet.encode()
     block_len = len(encoded_block)

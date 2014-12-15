@@ -53,3 +53,12 @@ def test_version_decode():
     eq_(decoded.minor, 1)
     eq_(decoded.patch, 1)
 
+def test_difficulty_encode():
+    dp = p.DifficultyPacket(5, p.GameType.deep_strike)
+    eq_(dp.encode(), b'\x05\x00\x00\x00\x03\x00\x00\x00')
+
+def test_difficulty_decode():
+    dp = p.DifficultyPacket.decode(b'\x0a\x00\x00\x00\x02\x00\x00\x00')
+    eq_(dp.difficulty, 10)
+    eq_(dp.game_type, p.GameType.double_front)
+
