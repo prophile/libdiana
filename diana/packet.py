@@ -120,12 +120,12 @@ class GameStartPacket(GameMessagePacket):
 
 class GameEndPacket(GameMessagePacket):
     def encode(self):
-        return b'\x06'
+        return b'\x06\x00\x00\x00'
 
     @classmethod
     def decode(cls, packet):
-        if packet != b'\x06':
-            raise ValueError("Wrong packet content")
+        if len(packet) != 4:
+            raise ValueError('Wrong packet length')
         return cls()
 
     def __str__(self):
