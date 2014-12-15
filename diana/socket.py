@@ -3,7 +3,7 @@ from . import packet
 
 BLOCKSIZE = 4096
 
-def connect(host, port, connect=socket.create_connection):
+def connect(host, port=2010, connect=socket.create_connection):
     sock = connect((host, port))
     def tx(pack):
         sock.send(packet.encode(pack))
