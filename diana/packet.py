@@ -40,7 +40,6 @@ class VersionPacket:
 
     @classmethod
     def decode(cls, packet):
-        print("Decoding version packet: {0!r}".format(packet))
         unknown_1, legacy_version, major, minor, patch = struct.unpack('<IfIII', packet)
         return cls(major, minor, patch)
 
