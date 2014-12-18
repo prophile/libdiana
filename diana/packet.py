@@ -18,6 +18,21 @@ def packet(n):
         return cls
     return wrapper
 
+class UndecodedPacket:
+    def __init__(self, packet_id, data):
+        self.packet_id = packet_id
+        self.data = data
+
+    def encode(self):
+        return self.data
+
+    @classmethod
+    def decode(cls, data):
+        return cls(0, data)
+
+    def __str__(self):
+        return "<UndecodedPacket id=0x{0:08x} data={1!r}>".format(self.packet_id, self.data)
+
 @packet(0x6d04b3da)
 class WelcomePacket:
     def __init__(self, message=''):
@@ -311,7 +326,7 @@ def decode(packet, provenance=PacketProvenance.server): # returns packets, trail
         try:
             return [PACKETS[ptype].decode(payload)] + rest, trailer
         except SoftDecodeFailure: # meaning unhandled bits
-            return rest, trailer
+            return [UndecodedPacket(ptype, payload)] + rest, trailer
     else:
         return rest, trailer
 
