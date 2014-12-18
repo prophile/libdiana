@@ -136,3 +136,22 @@ def test_main_screen_decode():
     assert isinstance(pp, p.SetMainScreenPacket)
     eq_(pp.screen, p.MainView.starboard)
 
+def test_set_ship_encode():
+    pp = p.SetShipPacket(4)
+    eq_(pp.encode(), b'\x0d\x00\x00\x00\x04\x00\x00\x00')
+
+def test_set_ship_decode():
+    pp = p.ShipAction1Packet.decode(b'\x0d\x00\x00\x00\x07\x00\x00\x00')
+    assert isinstance(pp, p.SetShipPacket)
+    eq_(pp.ship, 7)
+
+def test_console_encode():
+    pp = p.SetConsolePacket(p.Console.data, True)
+    eq_(pp.encode(), b'\x0e\x00\x00\x00\x06\x00\x00\x00\x01\x00\x00\x00')
+
+def test_console_decode():
+    pp = p.ShipAction1Packet.decode(b'\x0e\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00')
+    assert isinstance(pp, p.SetConsolePacket)
+    eq_(pp.console, p.Console.science)
+    eq_(pp.selected, False)
+

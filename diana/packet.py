@@ -207,6 +207,10 @@ class ShipAction1Packet:
             return HelmSetWarpPacket.decode(packet)
         if subtype_index == 1:
             return SetMainScreenPacket.decode(packet)
+        if subtype_index == 0x0d:
+            return SetShipPacket.decode(packet)
+        if subtype_index == 0x0e:
+            return SetConsolePacket.decode(packet)
         raise SoftDecodeFailure()
 
 class SetMainScreenPacket(ShipAction1Packet):
@@ -224,6 +228,34 @@ class SetMainScreenPacket(ShipAction1Packet):
     def __str__(self):
         return "<SetMainScreenPacket screen={0!r}>".format(self.screen)
 
+class Console(Enum):
+    main_screen = 0
+    helm = 1
+    weapons = 2
+    engineering = 3
+    science = 4
+    comms = 5
+    data = 6
+    observer = 7
+    captain_map = 8
+    game_master = 9
+
+class SetConsolePacket(ShipAction1Packet):
+    def __init__(self, console, selected):
+        self.console = console
+        self.selected = selected
+
+    def encode(self):
+        return struct.pack('<III', 0x0e, self.console.value, 1 if self.selected else 0)
+
+    @classmethod
+    def decode(cls, packet):
+        _idx, console_id, selected = struct.unpack('<III', packet)
+        return cls(Console(console_id), bool(selected))
+
+    def __str__(self):
+        return "<SetConsolePacket console={0!r} selected={1!r}>".format(self.console, self.selected)
+
 class HelmSetWarpPacket(ShipAction1Packet):
     def __init__(self, warp):
         self.warp = warp
@@ -238,6 +270,21 @@ class HelmSetWarpPacket(ShipAction1Packet):
 
     def __str__(self):
         return "<HelmSetWarpPacket warp={}>".format(self.warp)
+
+class SetShipPacket(ShipAction1Packet):
+    def __init__(self, ship):
+        self.ship = ship
+
+    def encode(self):
+        return struct.pack('<II', 0x0d, self.ship)
+
+    @classmethod
+    def decode(cls, packet):
+        _idx, ship = struct.unpack('<II', packet)
+        return cls(ship)
+
+    def __str__(self):
+        return "<SetShipPacket ship={}>".format(self.ship)
 
 @packet(0x0351a5ac)
 class ShipAction3Packet:
