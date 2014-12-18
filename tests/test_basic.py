@@ -1,6 +1,19 @@
 import diana.packet as p
 from nose.tools import *
 import time
+import functools
+from nose import SkipTest
+
+def xfail(test):
+    @functools.wraps(test)
+    def inner(*args, **kwargs):
+        try:
+            test(*args, **kwargs)
+        except Exception:
+            raise SkipTest
+        else:
+            raise AssertionError('Failure expected')
+    return inner
 
 def test_undecoded_round_trip():
     packet = (b'\xef\xbe\xad\xde' # packet heading
@@ -176,6 +189,26 @@ def test_warp_decode():
     pp = p.ShipAction1Packet.decode(b'\x00\x00\x00\x00\x02\x00\x00\x00')
     assert isinstance(pp, p.HelmSetWarpPacket)
     eq_(pp.warp, 2)
+
+@xfail
+def test_ra_encode():
+    rp = p.ToggleRedAlertPacket()
+    eq_(rp.encode(), b'\x0a\x00\x00\x00\x00\x00\x00\x00')
+
+@xfail
+def test_ra_decode():
+    rp = p.ShipAction1Packet.decode(b'\x0a\x00\x00\x00\x00\x00\x00\x00')
+    assert isinstance(rp, p.ToggleRedAlertPacket)
+
+@xfail
+def test_shields_encode():
+    rp = p.ToggleShieldsPacket()
+    eq_(rp.encode(), b'\x04\x00\x00\x00\x00\x00\x00\x00')
+
+@xfail
+def test_shields_decode():
+    rp = p.ShipAction1Packet.decode(b'\x04\x00\x00\x00\x00\x00\x00\x00')
+    assert isinstance(rp, p.ToggleShieldsPacket)
 
 def test_main_screen_encode():
     pp = p.SetMainScreenPacket(p.MainView.aft)
