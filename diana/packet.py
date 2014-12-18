@@ -321,6 +321,8 @@ class ShipAction1Packet:
             return HelmSetWarpPacket.decode(packet)
         if subtype_index == 1:
             return SetMainScreenPacket.decode(packet)
+        if subtype_index == 3:
+            return ToggleAutoBeamsPacket.decode(packet)
         if subtype_index == 4:
             return ToggleShieldsPacket.decode(packet)
         if subtype_index == 7:
@@ -373,6 +375,19 @@ class ToggleRedAlertPacket(ShipAction1Packet):
 
     def __str__(self):
         return '<ToggleRedAlertPacket>'
+
+class ToggleAutoBeamsPacket(ShipAction1Packet):
+    def encode(self):
+        return b'\x03\x00\x00\x00\x00\x00\x00\x00'
+
+    @classmethod
+    def decode(cls, data):
+        if data != b'\x03\x00\x00\x00\x00\x00\x00\x00':
+            raise SoftDecodeFailure()
+        return cls()
+
+    def __str__(self):
+        return '<ToggleAutoBeamsPacket>'
 
 class TogglePerspectivePacket(ShipAction1Packet):
     def encode(self):

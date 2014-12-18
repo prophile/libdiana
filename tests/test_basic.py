@@ -214,12 +214,10 @@ def test_perspective_decode():
     rp = p.ShipAction1Packet.decode(b'\x1a\x00\x00\x00\x00\x00\x00\x00')
     assert isinstance(rp, p.TogglePerspectivePacket)
 
-@xfail
 def test_auto_beams_encode():
     rp = p.ToggleAutoBeamsPacket()
     eq_(rp.encode(), b'\x03\x00\x00\x00\x00\x00\x00\x00')
 
-@xfail
 def test_auto_beams_decode():
     rp = p.ShipAction1Packet.decode(b'\x03\x00\x00\x00\x00\x00\x00\x00')
     assert isinstance(rp, p.ToggleAutoBeamsPacket)
