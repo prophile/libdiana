@@ -172,6 +172,58 @@ class PopupPacket(GameMessagePacket):
     def __str__(self):
         return '<PopupPacket message={0!r}>'.format(self.message)
 
+class MainView(Enum):
+    forward = 0
+    port = 1
+    starboard = 2
+    aft = 3
+    tactical = 4
+    lrs = 5
+    status = 6
+
+@packet(0x4c821d3c)
+class ShipAction1Packet:
+    @classmethod
+    def decode(cls, packet):
+        if not packet:
+            raise ValueError('No payload in game message')
+        subtype_index = packet[0]
+        if subtype_index == 0:
+            return HelmSetWarpPacket.decode(packet)
+        if subtype_index == 1:
+            return SetMainScreenPacket.decode(packet)
+        raise SoftDecodeFailure()
+
+class SetMainScreenPacket(ShipAction1Packet):
+    def __init__(self, screen):
+        self.screen = screen
+
+    def encode(self):
+        return struct.pack('<II', 1, self.screen.value)
+
+    @classmethod
+    def decode(cls, packet):
+        _idx, screen_id = struct.unpack('<II', packet)
+        return cls(MainView(screen_id))
+
+    def __str__(self):
+        return "<SetMainScreenPacket screen={0!r}>".format(self.screen)
+
+class HelmSetWarpPacket(ShipAction1Packet):
+    def __init__(self, warp):
+        self.warp = warp
+
+    def encode(self):
+        return struct.pack('<II', 0, self.warp)
+
+    @classmethod
+    def decode(cls, packet):
+        _idx, warp = struct.unpack('<II', packet)
+        return cls(warp)
+
+    def __str__(self):
+        return "<HelmSetWarpPacket warp={}>".format(self.warp)
+
 @packet(0x0351a5ac)
 class ShipAction3Packet:
     @classmethod

@@ -118,3 +118,21 @@ def test_impulse_decode():
     assert isinstance(pp, p.HelmSetImpulsePacket)
     eq_(pp.impulse, 0.0)
 
+def test_warp_encode():
+    pp = p.HelmSetWarpPacket(2)
+    eq_(pp.encode(), b'\x00\x00\x00\x00\x02\x00\x00\x00')
+
+def test_warp_decode():
+    pp = p.ShipAction1Packet.decode(b'\x00\x00\x00\x00\x02\x00\x00\x00')
+    assert isinstance(pp, p.HelmSetWarpPacket)
+    eq_(pp.warp, 2)
+
+def test_main_screen_encode():
+    pp = p.SetMainScreenPacket(p.MainView.aft)
+    eq_(pp.encode(), b'\x01\x00\x00\x00\x03\x00\x00\x00')
+
+def test_main_screen_decode():
+    pp = p.ShipAction1Packet.decode(b'\x01\x00\x00\x00\x02\x00\x00\x00')
+    assert isinstance(pp, p.SetMainScreenPacket)
+    eq_(pp.screen, p.MainView.starboard)
+
