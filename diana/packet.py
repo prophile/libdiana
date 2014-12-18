@@ -321,6 +321,8 @@ class ShipAction1Packet:
             return HelmSetWarpPacket.decode(packet)
         if subtype_index == 1:
             return SetMainScreenPacket.decode(packet)
+        if subtype_index == 4:
+            return ToggleShieldsPacket.decode(packet)
         if subtype_index == 7:
             return HelmRequestDockPacket.decode(packet)
         if subtype_index == 10:
@@ -343,6 +345,19 @@ class HelmRequestDockPacket(ShipAction1Packet):
 
     def __str__(self):
         return '<HelmRequestDockPacket>'
+
+class ToggleShieldsPacket(ShipAction1Packet):
+    def encode(self):
+        return b'\x04\x00\x00\x00\x00\x00\x00\x00'
+
+    @classmethod
+    def decode(cls, data):
+        if data != b'\x04\x00\x00\x00\x00\x00\x00\x00':
+            raise SoftDecodeFailure()
+        return cls()
+
+    def __str__(self):
+        return '<ToggleShieldsPacket>'
 
 class ToggleRedAlertPacket(ShipAction1Packet):
     def encode(self):
