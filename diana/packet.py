@@ -39,11 +39,16 @@ class WelcomePacket:
         self.message = message
 
     def encode(self):
-        return self.message.encode('ascii')
+        encoded_message = self.message.encode('ascii')
+        return struct.pack('<I', len(encoded_message)) + encoded_message
 
     @classmethod
     def decode(cls, packet):
-        return cls(packet.decode('ascii'))
+        string_length, = struct.unpack('<I', packet[:4])
+        decoded_message = packet[4:].decode('ascii')
+        if string_length != len(decoded_message):
+            raise ValueError('String length inconsistent with decoded length (should be {}, actually {})'.format(len(decoded_message), string_length))
+        return cls(decoded_message)
 
     def __str__(self):
         return "<WelcomePacket {0!r}>".format(self.message)
