@@ -172,6 +172,32 @@ class PopupPacket(GameMessagePacket):
     def __str__(self):
         return '<PopupPacket message={0!r}>'.format(self.message)
 
+@packet(0x0351a5ac)
+class ShipAction3Packet:
+    @classmethod
+    def decode(cls, packet):
+        if not packet:
+            raise ValueError('No payload in game message')
+        subtype_index = packet[0]
+        if subtype_index == 1:
+            return HelmSetSteeringPacket.decode(packet)
+        raise SoftDecodeFailure()
+
+class HelmSetSteeringPacket(ShipAction3Packet):
+    def __init__(self, rudder):
+        self.rudder = rudder
+
+    def encode(self):
+        return struct.pack('<If', 1, self.rudder)
+
+    @classmethod
+    def decode(cls, packet):
+        _idx, rudder = struct.unpack('<If', packet)
+        return cls(rudder)
+
+    def __str__(self):
+        return '<HelmSetSteeringPacket rudder={0!r}>'.format(self.rudder)
+
 def encode(packet, provenance=PacketProvenance.client):
     encoded_block = packet.encode()
     block_len = len(encoded_block)

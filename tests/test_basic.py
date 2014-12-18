@@ -100,3 +100,12 @@ def test_gm_popup_decode():
     assert isinstance(pp, p.PopupPacket)
     eq_(pp.message, 'bees')
 
+def test_steering_encode():
+    pp = p.HelmSetSteeringPacket(0.0)
+    eq_(pp.encode(), b'\x01\x00\x00\x00\x00\x00\x00\x00')
+
+def test_steering_decode():
+    pp = p.ShipAction3Packet.decode(b'\x01\x00\x00\x00\x00\x00\x00\x00')
+    assert isinstance(pp, p.HelmSetSteeringPacket)
+    eq_(pp.rudder, 0.0)
+
