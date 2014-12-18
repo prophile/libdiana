@@ -382,7 +382,7 @@ def decode(packet, provenance=PacketProvenance.server): # returns packets, trail
         return [], b''
     de_index = packet.find(0xef)
     if de_index > 0:
-        sys.stderr.print("WARNING: skipping {} bytes of stream to resync\n".format(de_index))
+        sys.stderr.write("WARNING: skipping {} bytes of stream to resync\n".format(de_index))
         sys.stderr.flush()
         packet = packet[de_index:]
     elif de_index == -1:
@@ -405,12 +405,12 @@ def decode(packet, provenance=PacketProvenance.server): # returns packets, trail
     trailer = packet[packet_len:]
     payload = packet[24:packet_len]
     rest, trailer = decode(trailer)
-    if ptype in PACKETS:
-        # we know how to decode this one
-        try:
+    try:
+        if ptype in PACKETS:
+            # we know how to decode this one
             return [PACKETS[ptype].decode(payload)] + rest, trailer
-        except SoftDecodeFailure: # meaning unhandled bits
-            return [UndecodedPacket(ptype, payload)] + rest, trailer
-    else:
-        return rest, trailer
+        else:
+            raise SoftDecodeFailure()
+    except SoftDecodeFailure: # meaning unhandled bits
+        return [UndecodedPacket(ptype, payload)] + rest, trailer
 

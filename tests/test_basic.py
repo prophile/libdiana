@@ -2,6 +2,20 @@ import diana.packet as p
 from nose.tools import *
 import time
 
+def test_undecoded_round_trip():
+    packet = (b'\xef\xbe\xad\xde' # packet heading
+              b'\x1c\x00\x00\x00' # total packet length
+              b'\x02\x00\x00\x00' # origin
+              b'\x00\x00\x00\x00' # padding
+              b'\x08\x00\x00\x00' # remaining length
+              b'\xdd\xcc\xbb\xaa' # packet type
+              b'\xfe\x83\x4c\x00') # packet data
+    decoded, rest = p.decode(packet, provenance=p.PacketProvenance.client)
+    eq_(len(decoded), 1)
+    eq_(rest, b'')
+    encoded = p.encode(decoded[0], provenance=p.PacketProvenance.client)
+    eq_(packet, encoded)
+
 def test_welcome_encode():
     wp = p.WelcomePacket('Welcome to eyes')
     encoding = p.encode(wp)
