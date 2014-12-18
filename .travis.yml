@@ -1,6 +1,12 @@
 language: python
 python:
-  - "3.4"
-install: "python setup.py develop"
-script: "python setup.py nosetests"
-
+- '3.4'
+install: python setup.py develop
+script: python setup.py nosetests
+deploy:
+  provider: pypi
+  user: alynn
+  on:
+    tags: true
+  password:
+    secure: f9Qlsme1aNar/y8K3zpLDSOZNXHZl7g24A03SUCUObA12wWHGTBuTfq2j/ZJrUy75y7Eemlj66iB2ZaDzbDGIqCphNhHo6fiV/dWzGsiLNYMX0POQRFDTXOzm64ftzh2nBjYM2N87aRyiGnNrQMBNRGc4cyn8yqiKQGSBL4mZB8=
