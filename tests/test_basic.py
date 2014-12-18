@@ -206,12 +206,10 @@ def test_shields_decode():
     rp = p.ShipAction1Packet.decode(b'\x04\x00\x00\x00\x00\x00\x00\x00')
     assert isinstance(rp, p.ToggleShieldsPacket)
 
-@xfail
 def test_perspective_encode():
     rp = p.TogglePerspectivePacket()
     eq_(rp.encode(), b'\x1a\x00\x00\x00\x00\x00\x00\x00')
 
-@xfail
 def test_perspective_decode():
     rp = p.ShipAction1Packet.decode(b'\x1a\x00\x00\x00\x00\x00\x00\x00')
     assert isinstance(rp, p.TogglePerspectivePacket)
