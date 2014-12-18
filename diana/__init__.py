@@ -1,4 +1,4 @@
-VERSION = 1.0
+VERSION = "0.0.2"
 
 from . import packet
 from .socket import connect
