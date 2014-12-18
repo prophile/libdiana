@@ -107,6 +107,22 @@ def test_gm_dmx_decode():
     eq_(dp.flag, 'y')
     eq_(dp.state, False)
 
+def test_gm_jump_start_encode():
+    ep = p.JumpStartPacket()
+    eq_(ep.encode(), b'\x0c\x00\x00\x00')
+
+def test_gm_jump_start_decode():
+    ep = p.GameMessagePacket.decode(b'\x0c\x00\x00\x00')
+    assert isinstance(ep, p.JumpStartPacket)
+
+def test_gm_jump_end_encode():
+    ep = p.JumpEndPacket()
+    eq_(ep.encode(), b'\x0d\x00\x00\x00')
+
+def test_gm_jump_end_decode():
+    ep = p.GameMessagePacket.decode(b'\x0d\x00\x00\x00')
+    assert isinstance(ep, p.JumpEndPacket)
+
 def test_intel_encode():
     ip = p.IntelPacket(object=0xaabbccdd, intel='bees')
     eq_(ip.encode(), b'\xdd\xcc\xbb\xaa\x03\x05\x00\x00\x00b\x00e\x00e\x00s\x00\x00\x00')

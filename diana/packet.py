@@ -193,6 +193,10 @@ class GameMessagePacket:
             return PopupPacket.decode(packet)
         if subtype_index == 11:
             return AutonomousDamconPacket.decode(packet)
+        if subtype_index == 12:
+            return JumpStartPacket.decode(packet)
+        if subtype_index == 13:
+            return JumpEndPacket.decode(packet)
         if subtype_index == 16:
             return DmxPacket.decode(packet)
         raise SoftDecodeFailure()
@@ -222,6 +226,32 @@ class GameEndPacket(GameMessagePacket):
 
     def __str__(self):
         return '<GameEndPacket>'
+
+class JumpStartPacket(GameMessagePacket):
+    def encode(self):
+        return b'\x0c\x00\x00\x00'
+
+    @classmethod
+    def decode(cls, packet):
+        if len(packet) != 4:
+            raise ValueError('Wrong packet length')
+        return cls()
+
+    def __str__(self):
+        return '<JumpStartPacket>'
+
+class JumpEndPacket(GameMessagePacket):
+    def encode(self):
+        return b'\x0d\x00\x00\x00'
+
+    @classmethod
+    def decode(cls, packet):
+        if len(packet) != 4:
+            raise ValueError('Wrong packet length')
+        return cls()
+
+    def __str__(self):
+        return '<JumpEndPacket>'
 
 class DmxPacket(GameMessagePacket):
     def __init__(self, flag, state):
