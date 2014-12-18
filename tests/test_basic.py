@@ -109,3 +109,12 @@ def test_steering_decode():
     assert isinstance(pp, p.HelmSetSteeringPacket)
     eq_(pp.rudder, 0.0)
 
+def test_impulse_encode():
+    pp = p.HelmSetImpulsePacket(0.0)
+    eq_(pp.encode(), b'\x00\x00\x00\x00\x00\x00\x00\x00')
+
+def test_impulse_decode():
+    pp = p.ShipAction3Packet.decode(b'\x00\x00\x00\x00\x00\x00\x00\x00')
+    assert isinstance(pp, p.HelmSetImpulsePacket)
+    eq_(pp.impulse, 0.0)
+

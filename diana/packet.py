@@ -179,6 +179,8 @@ class ShipAction3Packet:
         if not packet:
             raise ValueError('No payload in game message')
         subtype_index = packet[0]
+        if subtype_index == 0:
+            return HelmSetImpulsePacket.decode(packet)
         if subtype_index == 1:
             return HelmSetSteeringPacket.decode(packet)
         raise SoftDecodeFailure()
@@ -197,6 +199,21 @@ class HelmSetSteeringPacket(ShipAction3Packet):
 
     def __str__(self):
         return '<HelmSetSteeringPacket rudder={0!r}>'.format(self.rudder)
+
+class HelmSetImpulsePacket(ShipAction3Packet):
+    def __init__(self, impulse):
+        self.impulse = impulse
+
+    def encode(self):
+        return struct.pack('<If', 0, self.impulse)
+
+    @classmethod
+    def decode(cls, packet):
+        _idx, impulse = struct.unpack('<If', packet)
+        return cls(impulse)
+
+    def __str__(self):
+        return '<HelmSetImpulsePacket impulse={0!r}>'.format(self.impulse)
 
 def encode(packet, provenance=PacketProvenance.client):
     encoded_block = packet.encode()
