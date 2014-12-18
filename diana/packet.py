@@ -1,6 +1,7 @@
 import struct
 from enum import Enum
 import sys
+import math
 
 class SoftDecodeFailure(RuntimeError):
     pass
@@ -491,6 +492,8 @@ class ShipAction3Packet:
             return HelmSetImpulsePacket.decode(packet)
         if subtype_index == 1:
             return HelmSetSteeringPacket.decode(packet)
+        if subtype_index == 4:
+            return HelmJumpPacket.decode(packet)
         raise SoftDecodeFailure()
 
 class HelmSetSteeringPacket(ShipAction3Packet):
@@ -522,6 +525,22 @@ class HelmSetImpulsePacket(ShipAction3Packet):
 
     def __str__(self):
         return '<HelmSetImpulsePacket impulse={0!r}>'.format(self.impulse)
+
+class HelmJumpPacket(ShipAction3Packet):
+    def __init__(self, bearing, distance):
+        self.bearing = bearing
+        self.distance = distance
+
+    def encode(self):
+        return struct.pack('<Iff', 4, self.bearing / (math.pi * 2), self.distance / 50)
+
+    @classmethod
+    def decode(cls, packet):
+        _idx, bearing, distance = struct.unpack('<Iff', packet)
+        return cls(bearing * (math.pi * 2), distance * 50)
+
+    def __str__(self):
+        return '<HelmJumpPacket bearing={0!r} distance={1!r}>'.format(self.bearing, self.distance)
 
 def encode(packet, provenance=PacketProvenance.client):
     encoded_block = packet.encode()
