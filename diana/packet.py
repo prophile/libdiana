@@ -323,9 +323,11 @@ class ShipAction1Packet:
             return SetMainScreenPacket.decode(packet)
         if subtype_index == 7:
             return HelmRequestDockPacket.decode(packet)
-        if subtype_index == 0x0d:
+        if subtype_index == 10:
+            return ToggleRedAlertPacket.decode(packet)
+        if subtype_index == 13:
             return SetShipPacket.decode(packet)
-        if subtype_index == 0x0e:
+        if subtype_index == 14:
             return SetConsolePacket.decode(packet)
         raise SoftDecodeFailure()
 
@@ -341,6 +343,19 @@ class HelmRequestDockPacket(ShipAction1Packet):
 
     def __str__(self):
         return '<HelmRequestDockPacket>'
+
+class ToggleRedAlertPacket(ShipAction1Packet):
+    def encode(self):
+        return b'\x0a\x00\x00\x00\x00\x00\x00\x00'
+
+    @classmethod
+    def decode(cls, data):
+        if data != b'\x0a\x00\x00\x00\x00\x00\x00\x00':
+            raise SoftDecodeFailure()
+        return cls()
+
+    def __str__(self):
+        return '<ToggleRedAlertPacket>'
 
 class SetMainScreenPacket(ShipAction1Packet):
     def __init__(self, screen):

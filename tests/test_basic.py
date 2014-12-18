@@ -190,12 +190,10 @@ def test_warp_decode():
     assert isinstance(pp, p.HelmSetWarpPacket)
     eq_(pp.warp, 2)
 
-@xfail
 def test_ra_encode():
     rp = p.ToggleRedAlertPacket()
     eq_(rp.encode(), b'\x0a\x00\x00\x00\x00\x00\x00\x00')
 
-@xfail
 def test_ra_decode():
     rp = p.ShipAction1Packet.decode(b'\x0a\x00\x00\x00\x00\x00\x00\x00')
     assert isinstance(rp, p.ToggleRedAlertPacket)
