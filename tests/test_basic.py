@@ -97,6 +97,16 @@ def test_gm_end_decode():
     ep = p.GameMessagePacket.decode(b'\x06\x00\x00\x00')
     assert isinstance(ep, p.GameEndPacket)
 
+def test_gm_dmx_encode():
+    dp = p.DmxPacket(flag='bees', state=True)
+    eq_(dp.encode(), b'\x10\x00\x00\x00\x05\x00\x00\x00b\x00e\x00e\x00s\x00\x00\x00\x01\x00\x00\x00')
+
+def test_gm_dmx_decode():
+    dp = p.GameMessagePacket.decode(b'\x10\x00\x00\x00\x01\x00\x00\x00y\x00\x00\x00\x00\x00\x00\x00')
+    assert isinstance(dp, p.DmxPacket)
+    eq_(dp.flag, 'y')
+    eq_(dp.state, False)
+
 def test_intel_encode():
     ip = p.IntelPacket(object=0xaabbccdd, intel='bees')
     eq_(ip.encode(), b'\xdd\xcc\xbb\xaa\x03\x05\x00\x00\x00b\x00e\x00e\x00s\x00\x00\x00')
