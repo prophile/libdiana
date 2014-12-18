@@ -145,6 +145,8 @@ class GameMessagePacket:
             return GameEndPacket.decode(packet)
         if subtype_index == 10:
             return PopupPacket.decode(packet)
+        if subtype_index == 11:
+            return AutonomousDamconPacket.decode(packet)
         raise SoftDecodeFailure()
 
 class GameStartPacket(GameMessagePacket):
@@ -186,6 +188,21 @@ class PopupPacket(GameMessagePacket):
 
     def __str__(self):
         return '<PopupPacket message={0!r}>'.format(self.message)
+
+class AutonomousDamconPacket(GameMessagePacket):
+    def __init__(self, autonomy):
+        self.autonomy = autonomy
+
+    def encode(self):
+        return struct.pack('<II', 0x0b, int(self.autonomy))
+
+    @classmethod
+    def decode(cls, packet):
+        id_, autonomy = struct.unpack('<II', packet)
+        return cls(bool(autonomy))
+
+    def __str__(self):
+        return '<AutonomousDamconPacket autonomy={0!r}>'.format(self.autonomy)
 
 class MainView(Enum):
     forward = 0

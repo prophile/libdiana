@@ -100,6 +100,15 @@ def test_gm_popup_decode():
     assert isinstance(pp, p.PopupPacket)
     eq_(pp.message, 'bees')
 
+def test_gm_autonomous_damcon_encode():
+    dp = p.AutonomousDamconPacket(autonomy=True)
+    eq_(dp.encode(), b'\x0b\x00\x00\x00\x01\x00\x00\x00')
+
+def test_gm_autonomous_damcon_decode():
+    pp = p.GameMessagePacket.decode(b'\x0b\x00\x00\x00\x00\x00\x00\x00')
+    assert isinstance(pp, p.AutonomousDamconPacket)
+    eq_(pp.autonomy, False)
+
 def test_steering_encode():
     pp = p.HelmSetSteeringPacket(0.0)
     eq_(pp.encode(), b'\x01\x00\x00\x00\x00\x00\x00\x00')
