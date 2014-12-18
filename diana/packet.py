@@ -335,6 +335,8 @@ class ShipAction1Packet:
             return SetConsolePacket.decode(packet)
         if subtype_index == 26:
             return TogglePerspectivePacket.decode(packet)
+        if subtype_index == 27:
+            return ClimbDivePacket.decode(packet)
         raise SoftDecodeFailure()
 
 class HelmRequestDockPacket(ShipAction1Packet):
@@ -401,6 +403,21 @@ class TogglePerspectivePacket(ShipAction1Packet):
 
     def __str__(self):
         return '<TogglePerspectivePacket>'
+
+class ClimbDivePacket(ShipAction1Packet):
+    def __init__(self, direction):
+        self.direction = direction
+
+    def encode(self):
+        return struct.pack('<Ii', 27, self.direction)
+
+    @classmethod
+    def decode(cls, packet):
+        _idx, direction = struct.unpack('<Ii', packet)
+        return cls(direction)
+
+    def __str__(self):
+        return "<ClimbDivePacket direction={0!r}>".format(self.direction)
 
 class SetMainScreenPacket(ShipAction1Packet):
     def __init__(self, screen):

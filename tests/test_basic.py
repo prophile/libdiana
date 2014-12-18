@@ -222,12 +222,10 @@ def test_auto_beams_decode():
     rp = p.ShipAction1Packet.decode(b'\x03\x00\x00\x00\x00\x00\x00\x00')
     assert isinstance(rp, p.ToggleAutoBeamsPacket)
 
-@xfail
 def test_pitch_encode():
     pp = p.ClimbDivePacket(-1)
     eq_(pp.encode(), b'\x1b\x00\x00\x00\xff\xff\xff\xff')
 
-@xfail
 def test_pitch_decode():
     pp = p.ShipAction1Packet.decode(b'\x1b\x00\x00\x00\xff\xff\xff\xff')
     assert isinstance(pp, p.ClimbDivePacket)
