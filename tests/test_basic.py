@@ -210,6 +210,37 @@ def test_shields_decode():
     rp = p.ShipAction1Packet.decode(b'\x04\x00\x00\x00\x00\x00\x00\x00')
     assert isinstance(rp, p.ToggleShieldsPacket)
 
+@xfail
+def test_perspective_encode():
+    rp = p.TogglePerspectivePacket()
+    eq_(rp.encode(), b'\x1a\x00\x00\x00\x00\x00\x00\x00')
+
+@xfail
+def test_perspective_decode():
+    rp = p.ShipAction1Packet.decode(b'\x1a\x00\x00\x00\x00\x00\x00\x00')
+    assert isinstance(rp, p.TogglePerspectivePacket)
+
+@xfail
+def test_auto_beams_encode():
+    rp = p.ToggleAutoBeamsPacket()
+    eq_(rp.encode(), b'\x03\x00\x00\x00\x00\x00\x00\x00')
+
+@xfail
+def test_auto_beams_decode():
+    rp = p.ShipAction1Packet.decode(b'\x03\x00\x00\x00\x00\x00\x00\x00')
+    assert isinstance(rp, p.ToggleAutoBeamsPacket)
+
+@xfail
+def test_pitch_encode():
+    pp = p.ClimbDivePacket(-1)
+    eq_(pp.encode(), b'\x1b\x00\x00\x00\xff\xff\xff\xff')
+
+@xfail
+def test_pitch_decode():
+    pp = p.ShipAction1Packet.decode(b'\x1b\x00\x00\x00\xff\xff\xff\xff')
+    assert isinstance(pp, p.ClimbDivePacket)
+    eq_(pp.direction, -1)
+
 def test_main_screen_encode():
     pp = p.SetMainScreenPacket(p.MainView.aft)
     eq_(pp.encode(), b'\x01\x00\x00\x00\x03\x00\x00\x00')
