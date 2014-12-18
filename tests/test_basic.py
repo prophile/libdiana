@@ -187,3 +187,14 @@ def test_dock_decode():
     pp = p.ShipAction1Packet.decode(b'\x07\x00\x00\x00\x00\x00\x00\x00')
     assert isinstance(pp, p.HelmRequestDockPacket)
 
+def test_cs_encode():
+    cp = p.ConsoleStatusPacket(2, {p.Console.helm: p.ConsoleStatus.yours, p.Console.weapons: p.ConsoleStatus.unavailable})
+    eq_(cp.encode(), b'\x02\x00\x00\x00\x00\x01\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+
+def test_cs_decode():
+    cp = p.ConsoleStatusPacket.decode(b'\x02\x00\x00\x00\x00\x01\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+    eq_(cp.ship, 2)
+    eq_(cp.consoles[p.Console.helm], p.ConsoleStatus.yours)
+    eq_(cp.consoles[p.Console.weapons], p.ConsoleStatus.unavailable)
+    eq_(cp.consoles[p.Console.data], p.ConsoleStatus.available)
+

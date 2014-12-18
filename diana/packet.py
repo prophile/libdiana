@@ -98,6 +98,45 @@ class DifficultyPacket:
     def __str__(self):
         return "<DifficultyPacket difficulty={} game_type={}>".format(self.difficulty, self.game_type)
 
+class Console(Enum):
+    main_screen = 0
+    helm = 1
+    weapons = 2
+    engineering = 3
+    science = 4
+    comms = 5
+    data = 6
+    observer = 7
+    captain_map = 8
+    game_master = 9
+
+class ConsoleStatus(Enum):
+    available = 0
+    yours = 1
+    unavailable = 2
+
+@packet(0x19c6e2d4)
+class ConsoleStatusPacket:
+    def __init__(self, ship, consoles):
+        self.consoles = {key: consoles.get(key, ConsoleStatus.available) for key in Console}
+        self.ship = ship
+
+    def encode(self):
+        return struct.pack('<I', self.ship) + bytes([self.consoles[console].value for console in Console]) + struct.pack('<I', 0)
+
+    @classmethod
+    def decode(cls, packet):
+        ship, = struct.unpack('<I', packet[:4])
+        body = packet[4:-4]
+        consoles = {console: ConsoleStatus(body[console.value]) for console in Console}
+        return cls(ship, consoles)
+
+    def __str__(self):
+        return '<ConsoleStatusPacket ship={0} consoles={1!r}>'.format(self.ship,
+                                                                      {console: status
+                                                                         for console, status in self.consoles.items()
+                                                                         if status != ConsoleStatus.available})
+
 @packet(0xf5821226)
 class HeartbeatPacket:
     def encode(self):
@@ -264,18 +303,6 @@ class SetMainScreenPacket(ShipAction1Packet):
 
     def __str__(self):
         return "<SetMainScreenPacket screen={0!r}>".format(self.screen)
-
-class Console(Enum):
-    main_screen = 0
-    helm = 1
-    weapons = 2
-    engineering = 3
-    science = 4
-    comms = 5
-    data = 6
-    observer = 7
-    captain_map = 8
-    game_master = 9
 
 class SetConsolePacket(ShipAction1Packet):
     def __init__(self, console, selected):
