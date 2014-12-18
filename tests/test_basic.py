@@ -155,3 +155,11 @@ def test_console_decode():
     eq_(pp.console, p.Console.science)
     eq_(pp.selected, False)
 
+def test_dock_encode():
+    pp = p.HelmRequestDockPacket()
+    eq_(pp.encode(), b'\x07\x00\x00\x00\x00\x00\x00\x00')
+
+def test_dock_decode():
+    pp = p.ShipAction1Packet.decode(b'\x07\x00\x00\x00\x00\x00\x00\x00')
+    assert isinstance(pp, p.HelmRequestDockPacket)
+
