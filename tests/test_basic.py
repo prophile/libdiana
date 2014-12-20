@@ -229,6 +229,15 @@ def test_steering_decode():
     assert isinstance(pp, p.HelmSetSteeringPacket)
     eq_(pp.rudder, 0.0)
 
+def test_beam_freq_encode():
+    pp = p.SetBeamFreqPacket(1)
+    eq_(pp.encode(), b'\x0b\x00\x00\x00\x01\x00\x00\x00')
+
+def test_beam_freq_decode():
+    pp = p.ShipAction1Packet.decode(b'\x0b\x00\x00\x00\x01\x00\x00\x00')
+    assert isinstance(pp, p.SetBeamFreqPacket)
+    eq_(pp.freq, 1)
+
 def test_impulse_encode():
     pp = p.HelmSetImpulsePacket(0.0)
     eq_(pp.encode(), b'\x00\x00\x00\x00\x00\x00\x00\x00')

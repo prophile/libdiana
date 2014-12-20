@@ -404,6 +404,8 @@ class ShipAction1Packet:
             return HelmRequestDockPacket.decode(packet)
         if subtype_index == 10:
             return ToggleRedAlertPacket.decode(packet)
+        if subtype_index == 11:
+            return SetBeamFreqPacket.decode(packet)
         if subtype_index == 13:
             return SetShipPacket.decode(packet)
         if subtype_index == 15:
@@ -421,6 +423,21 @@ class ShipAction1Packet:
         if subtype_index == 27:
             return ClimbDivePacket.decode(packet)
         raise SoftDecodeFailure()
+
+class SetBeamFreqPacket(ShipAction1Packet):
+    def __init__(self, freq):
+        self.freq = freq
+
+    def encode(self):
+        return pack('II', 11, self.freq)
+
+    @classmethod
+    def decode(cls, packet):
+        _idx, freq = unpack('II', packet)
+        return cls(freq)
+
+    def __str__(self):
+        return "<SetBeamFreqPacket freq={}>".format(self.freq)
 
 class HelmToggleReversePacket(ShipAction1Packet):
     def encode(self):
