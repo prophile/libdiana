@@ -192,6 +192,16 @@ def test_intel_decode():
     eq_(ip.object, 0xaabbccdd)
     eq_(ip.intel, 'bees')
 
+def test_comms_encode():
+    cp = p.CommsIncomingPacket(priority=3, sender='x', message='y\nz')
+    eq_(cp.encode(), b'\x03\x00\x00\x00\x02\x00\x00\x00x\x00\x00\x00\x04\x00\x00\x00y\x00^\x00z\x00\x00\x00')
+
+def test_comms_decode():
+    cp = p.CommsIncomingPacket.decode(b'\x01\x00\x00\x00\x02\x00\x00\x00x\x00\x00\x00\x04\x00\x00\x00y\x00^\x00z\x00\x00\x00')
+    eq_(cp.priority, 1)
+    eq_(cp.sender, 'x')
+    eq_(cp.message, 'y\nz')
+
 def test_gm_popup_encode():
     pp = p.PopupPacket(message='bees')
     eq_(pp.encode(), b'\x0a\x00\x00\x00\x05\x00\x00\x00b\x00e\x00e\x00s\x00\x00\x00')

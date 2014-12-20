@@ -148,6 +148,24 @@ class IntelPacket:
     def __str__(self):
         return '<IntelPacket object={0} intel={1!r}>'.format(self.object, self.intel)
 
+@packet(0xd672c35f)
+class CommsIncomingPacket:
+    def __init__(self, priority, sender, message):
+        self.priority = priority
+        self.sender = sender
+        self.message = message
+
+    def encode(self):
+        return pack('Iuu', self.priority, self.sender, self.message.replace('\n', '^'))
+
+    @classmethod
+    def decode(cls, packet):
+        prio, sender, message = unpack('Iuu', packet)
+        return cls(prio, sender, message.replace('^', '\n'))
+
+    def __str__(self):
+        return '<CommsIncomingPacket priority={0} sender={1!r} message={2!r}>'.format(self.priority, self.sender, self.message)
+
 @packet(0x80803df9)
 class ObjectUpdatePacket:
     def __init__(self, raw_data):
