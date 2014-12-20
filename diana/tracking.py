@@ -4,6 +4,13 @@ class Tracker:
     def __init__(self):
         self.objects = {}
 
+    @property
+    def player_ship(self):
+        for _obj in self.objects.values():
+            if _obj['type'] == p.ObjectType.player_vessel:
+                return _obj
+        return {}
+
     def update_object(self, record):
         try:
             oid = record['object']
