@@ -93,11 +93,11 @@ class DifficultyPacket:
         self.game_type = game_type
 
     def encode(self):
-        return struct.pack('<II', self.difficulty, self.game_type.value)
+        return pack('II', self.difficulty, self.game_type.value)
 
     @classmethod
     def decode(cls, packet):
-        difficulty, game_type_raw = struct.unpack('<II', packet)
+        difficulty, game_type_raw = unpack('II', packet)
         return cls(difficulty, GameType(game_type_raw))
 
     def __str__(self):
