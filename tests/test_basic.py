@@ -240,10 +240,10 @@ def test_impulse_decode():
 
 def test_jump_encode():
     pp = p.HelmJumpPacket(3.1415, 35.0)
-    eq_(pp.encode(), b'\x04\x00\x00\x00\x11\xfe\xff>333?')
+    eq_(pp.encode(), b'\x05\x00\x00\x00\x11\xfe\xff>333?')
 
 def test_jump_decode():
-    pp = p.ShipAction3Packet.decode(b'\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
+    pp = p.ShipAction3Packet.decode(b'\x05\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
     assert isinstance(pp, p.HelmJumpPacket)
     eq_(pp.bearing, 0.0)
     eq_(pp.distance, 0.0)

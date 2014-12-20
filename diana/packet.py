@@ -632,7 +632,7 @@ class ShipAction3Packet:
             return HelmSetImpulsePacket.decode(packet)
         if subtype_index == 1:
             return HelmSetSteeringPacket.decode(packet)
-        if subtype_index == 4:
+        if subtype_index == 5:
             return HelmJumpPacket.decode(packet)
         raise SoftDecodeFailure()
 
@@ -672,7 +672,7 @@ class HelmJumpPacket(ShipAction3Packet):
         self.distance = distance
 
     def encode(self):
-        return pack('Iff', 4, self.bearing / (math.pi * 2), self.distance / 50)
+        return pack('Iff', 5, self.bearing / (math.pi * 2), self.distance / 50)
 
     @classmethod
     def decode(cls, packet):
