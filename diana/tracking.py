@@ -31,4 +31,6 @@ class Tracker:
                 self.update_object(record)
         elif isinstance(packet, p.DestroyObjectPacket):
             self.remove_object(packet.object)
+        elif isinstance(packet, p.IntelPacket):
+            self.update_object({'object': packet.object, 'intel': packet.intel})
 
