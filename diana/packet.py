@@ -188,6 +188,8 @@ class GameMessagePacket:
             return GameStartPacket.decode(packet)
         if subtype_index == 6:
             return GameEndPacket.decode(packet)
+        if subtype_index == 9:
+            return SkyboxPacket.decode(packet)
         if subtype_index == 10:
             return PopupPacket.decode(packet)
         if subtype_index == 11:
@@ -302,6 +304,21 @@ class DmxPacket(GameMessagePacket):
 
     def __str__(self):
         return '<DmxPacket flag={0!r} state={1!r}>'.format(self.flag, self.state)
+
+class SkyboxPacket(GameMessagePacket):
+    def __init__(self, skybox):
+        self.skybox = skybox
+
+    def encode(self):
+        return pack('II', 9, self.skybox)
+
+    @classmethod
+    def decode(cls, packet):
+        _id, skybox = unpack('II', packet)
+        return cls(skybox)
+
+    def __str__(self):
+        return '<SkyboxPacket skybox={0!r}>'.format(self.skybox)
 
 class PopupPacket(GameMessagePacket):
     def __init__(self, message):

@@ -166,6 +166,15 @@ def test_gm_all_ship_decode():
     assert isinstance(packet, p.AllShipSettingsPacket)
     eq_(packet.ships[7].name, 'Diana')
 
+def test_gm_skybox_encode():
+    sp = p.SkyboxPacket(6)
+    eq_(sp.encode(), b'\x09\x00\x00\x00\x06\x00\x00\x00')
+
+def test_gm_skybox_decode():
+    sp = p.GameMessagePacket.decode(b'\x09\x00\x00\x00\xff\xff\xff\xff')
+    assert isinstance(sp, p.SkyboxPacket)
+    eq_(sp.skybox, 0xffffffff)
+
 def test_gm_jump_end_encode():
     ep = p.JumpEndPacket()
     eq_(ep.encode(), b'\x0d\x00\x00\x00')
