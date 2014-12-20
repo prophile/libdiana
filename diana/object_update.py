@@ -412,6 +412,28 @@ def decode_obj_update_packet(packet):
                 packet = packet[4:]
             if fields_2 & 0xe0:
                 raise ValueError('Unknown data keys for whale')
+        elif update_type == 0x10:
+            _id, oid, fields_1, fields_2, packet = unpack('BIBB*', packet)
+            obj['object'] = oid
+            obj['type'] = ObjectType.drone
+            if fields_1 & 0x01:
+                packet = packet[4:]
+            if fields_1 & 0x02:
+                obj['x'], packet = unpack('f*', packet)
+            if fields_1 & 0x04:
+                packet = packet[4:]
+            if fields_1 & 0x08:
+                obj['z'], packet = unpack('f*', packet)
+            if fields_1 & 0x10:
+                packet = packet[4:]
+            if fields_1 & 0x20:
+                obj['y'], packet = unpack('f*', packet)
+            if fields_1 & 0x40:
+                obj['heading'], packet = unpack('f*', packet)
+            if fields_1 & 0x80:
+                packet = packet[4:]
+            if fields_2:
+                raise ValueError('Unknown data keys for drone')
         else:
             raise ValueError('Unknown object type {}'.format(update_type))
         entries.append(obj)
