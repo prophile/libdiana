@@ -2,6 +2,10 @@ import struct
 from enum import Enum
 import sys
 import math
+from .encoding import encode as base_pack, decode as unpack
+
+def pack(fmt, *args):
+    return base_pack(fmt, args)
 
 class SoftDecodeFailure(RuntimeError):
     pass
@@ -62,13 +66,13 @@ class VersionPacket:
         self.patch = patch
 
     def encode(self):
-        return struct.pack('<IfIII', 0,
-                                     float('{}.{}'.format(self.major, self.minor)),
-                                    self.major, self.minor, self.patch)
+        return pack('IfIII', 0,
+                     float('{}.{}'.format(self.major, self.minor)),
+                     self.major, self.minor, self.patch)
 
     @classmethod
     def decode(cls, packet):
-        unknown_1, legacy_version, major, minor, patch = struct.unpack('<IfIII', packet)
+        unknown_1, legacy_version, major, minor, patch = unpack('IfIII', packet)
         return cls(major, minor, patch)
 
     def __str__(self):
