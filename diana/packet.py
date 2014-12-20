@@ -412,11 +412,28 @@ class ShipAction1Packet:
             return SetConsolePacket.decode(packet)
         if subtype_index == 22:
             return SetShipSettingsPacket.decode(packet)
+        if subtype_index == 24:
+            return HelmToggleReversePacket.decode(packet)
+        if subtype_index == 25:
+            return Ready2Packet.decode(packet)
         if subtype_index == 26:
             return TogglePerspectivePacket.decode(packet)
         if subtype_index == 27:
             return ClimbDivePacket.decode(packet)
         raise SoftDecodeFailure()
+
+class HelmToggleReversePacket(ShipAction1Packet):
+    def encode(self):
+        return b'\x18\x00\x00\x00\x00\x00\x00\x00'
+
+    @classmethod
+    def decode(cls, packet):
+        if packet != b'\x18\x00\x00\x00\x00\x00\x00\x00':
+            raise ValueError('Unexpected payload in reverse packet')
+        return cls()
+
+    def __str__(self):
+        return '<HelmToggleReversePacket>'
 
 class ReadyPacket(ShipAction1Packet):
     def encode(self):
@@ -430,6 +447,19 @@ class ReadyPacket(ShipAction1Packet):
 
     def __str__(self):
         return '<ReadyPacket>'
+
+class Ready2Packet(ShipAction1Packet):
+    def encode(self):
+        return b'\x19\x00\x00\x00\x00\x00\x00\x00'
+
+    @classmethod
+    def decode(cls, packet):
+        if packet != b'\x19\x00\x00\x00\x00\x00\x00\x00':
+            raise ValueError('Unexpected payload in ready2 packet')
+        return cls()
+
+    def __str__(self):
+        return '<Ready2Packet>'
 
 class SetShipSettingsPacket(ShipAction1Packet):
     def __init__(self, drive, type, name):
