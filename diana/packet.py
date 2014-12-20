@@ -127,12 +127,13 @@ class ConsoleStatusPacket:
         self.ship = ship
 
     def encode(self):
-        return struct.pack('<I', self.ship) + bytes([self.consoles[console].value for console in Console])
+        return pack('I[B]', self.ship,
+                    [(self.consoles[console].value,) for console in Console])
 
     @classmethod
     def decode(cls, packet):
-        ship, = struct.unpack('<I', packet[:4])
-        body = packet[4:]
+        ship, body = unpack('I[B]', packet)
+        body = [x[0] for x in body]
         if len(body) != len(Console):
             raise ValueError("Incorrect console count ({}, should be {})".format(len(body), len(Console)))
         consoles = {console: ConsoleStatus(body[console.value]) for console in Console}
