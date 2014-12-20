@@ -324,6 +324,66 @@ def decode_obj_update_packet(packet):
                 packet = packet[1:]
             if fields_2 & 0xc0:
                 raise ValueError('Unknown data keys for base')
+        elif update_type == 0x06:
+            _id, oid, fields, packet = unpack('BIB*', packet)
+            obj['object'] = oid
+            obj['type'] = ObjectType.mine
+            if fields & 0x01:
+                obj['x'] = unpack('f*', packet)
+            if fields & 0x02:
+                obj['y'] = unpack('f*', packet)
+            if fields & 0x04:
+                obj['z'] = unpack('f*', packet)
+            if fields & 0x08:
+                packet = packet[4:]
+            if fields & 0x10:
+                packet = packet[4:]
+            if fields & 0x20:
+                packet = packet[4:]
+            if fields & 0x40:
+                packet = packet[4:]
+            if fields & 0x80:
+                packet = packet[4:]
+        elif update_type == 0x07:
+            _id, oid, fields, packet = unpack('BIB*', packet)
+            obj['object'] = oid
+            obj['type'] = ObjectType.anomaly
+            if fields & 0x01:
+                obj['x'] = unpack('f*', packet)
+            if fields & 0x02:
+                obj['y'] = unpack('f*', packet)
+            if fields & 0x04:
+                obj['z'] = unpack('f*', packet)
+            if fields & 0x08:
+                obj['name'], packet = unpack('u*', packet)
+            if fields & 0x10:
+                packet = packet[4:]
+            if fields & 0x20:
+                packet = packet[4:]
+            if fields & 0x40:
+                packet = packet[4:]
+            if fields & 0x80:
+                packet = packet[4:]
+        elif update_type == 0x09:
+            _id, oid, fields, packet = unpack('BIB*', packet)
+            obj['object'] = oid
+            obj['type'] = ObjectType.nebula
+            if fields & 0x01:
+                obj['x'], packet = unpack('f*', packet)
+            if fields & 0x02:
+                obj['y'], packet = unpack('f*', packet)
+            if fields & 0x04:
+                obj['z'], packet = unpack('f*', packet)
+            if fields & 0x08:
+                obj['red'], packet = unpack('f*', packet)
+            if fields & 0x10:
+                obj['green'], packet = unpack('f*', packet)
+            if fields & 0x20:
+                obj['blue'], packet = unpack('f*', packet)
+            if fields & 0x40:
+                packet = packet[4:]
+            if fields & 0x80:
+                packet = packet[4:]
         else:
             raise ValueError('Unknown object type {}'.format(update_type))
         entries.append(obj)
