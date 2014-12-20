@@ -3,6 +3,7 @@ from enum import Enum
 import sys
 import math
 from .encoding import encode as base_pack, decode as unpack
+from collections import namedtuple
 
 def pack(fmt, *args):
     return base_pack(fmt, args)
@@ -195,6 +196,8 @@ class GameMessagePacket:
             return JumpStartPacket.decode(packet)
         if subtype_index == 13:
             return JumpEndPacket.decode(packet)
+        if subtype_index == 15:
+            return AllShipSettingsPacket.decode(packet)
         if subtype_index == 16:
             return DmxPacket.decode(packet)
         raise SoftDecodeFailure()
@@ -224,6 +227,39 @@ class GameEndPacket(GameMessagePacket):
 
     def __str__(self):
         return '<GameEndPacket>'
+
+class DriveType(Enum):
+    warp = 0
+    jump = 1
+
+class ShipType(Enum):
+    light_cruiser = 0
+    scout = 1
+    battleship = 2
+    missile_cruiser = 3
+    dreadnought = 4
+
+ShipSettingsRecord = namedtuple('ShipSettingsRecord', 'drive type name')
+
+class AllShipSettingsPacket(GameMessagePacket):
+    def __init__(self, ships):
+        self.ships = list(ships)
+        if len(self.ships) != 8:
+            raise ValueError('Must be 8 ships, {} given'.format(len(self.ships)))
+
+    def encode(self):
+        return pack('I[IIIu]', 15,
+                    [(ship.drive.value, ship.type.value, 1, ship.name)
+                        for ship in self.ships])
+
+    @classmethod
+    def decode(cls, packet):
+        _id, records = unpack('I[IIIu]', packet)
+        return cls(ShipSettingsRecord(DriveType(drv), ShipType(typ), name)
+                      for drv, typ, _what, name in records)
+
+    def __str__(self):
+        return '<AllShipSettingsPacket settings={0!r}>'.format(self.ships)
 
 class JumpStartPacket(GameMessagePacket):
     def encode(self):

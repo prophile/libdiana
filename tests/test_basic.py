@@ -128,6 +128,44 @@ def test_gm_jump_start_decode():
     ep = p.GameMessagePacket.decode(b'\x0c\x00\x00\x00')
     assert isinstance(ep, p.JumpStartPacket)
 
+GM_ALL_SHIPS_PACKET = b'\x0f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x08\x00\x00\x00A\x00r\x00t\x00e\x00m\x00i\x00s\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\t\x00\x00\x00I\x00n\x00t\x00r\x00e\x00p\x00i\x00d\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x06\x00\x00\x00A\x00e\x00g\x00i\x00s\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x08\x00\x00\x00H\x00o\x00r\x00a\x00t\x00i\x00o\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\n\x00\x00\x00E\x00x\x00c\x00a\x00l\x00i\x00b\x00u\x00r\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x05\x00\x00\x00H\x00e\x00r\x00a\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x06\x00\x00\x00C\x00e\x00r\x00e\x00s\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x06\x00\x00\x00D\x00i\x00a\x00n\x00a\x00\x00\x00'
+
+def test_gm_all_ship_encode():
+    ShipSettingsRecord = p.ShipSettingsRecord
+    DriveType = p.DriveType
+    ShipType = p.ShipType
+    ships = [ShipSettingsRecord(drive=DriveType.warp,
+                                type=ShipType.light_cruiser,
+                                name='Artemis'),
+             ShipSettingsRecord(drive=DriveType.warp,
+                                type=ShipType.light_cruiser,
+                                name='Intrepid'),
+             ShipSettingsRecord(drive=DriveType.warp,
+                                type=ShipType.light_cruiser,
+                                name='Aegis'),
+             ShipSettingsRecord(drive=DriveType.warp,
+                                type=ShipType.light_cruiser,
+                                name='Horatio'),
+             ShipSettingsRecord(drive=DriveType.warp,
+                                type=ShipType.light_cruiser,
+                                name='Excalibur'),
+             ShipSettingsRecord(drive=DriveType.warp,
+                                type=ShipType.light_cruiser,
+                                name='Hera'),
+             ShipSettingsRecord(drive=DriveType.warp,
+                                type=ShipType.light_cruiser,
+                                name='Ceres'),
+             ShipSettingsRecord(drive=DriveType.warp,
+                                type=ShipType.light_cruiser,
+                                name='Diana')]
+    data = p.AllShipSettingsPacket(ships).encode()
+    eq_(data, GM_ALL_SHIPS_PACKET)
+
+def test_gm_all_ship_decode():
+    packet = p.GameMessagePacket.decode(GM_ALL_SHIPS_PACKET)
+    assert isinstance(packet, p.AllShipSettingsPacket)
+    eq_(packet.ships[7].name, 'Diana')
+
 def test_gm_jump_end_encode():
     ep = p.JumpEndPacket()
     eq_(ep.encode(), b'\x0d\x00\x00\x00')
