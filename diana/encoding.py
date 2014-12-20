@@ -43,6 +43,12 @@ def encode_array(fmt, data):
     return b''.join(encode(this_fmt, x) for x in array_elements) + remainder
 ENCODERS['['] = encode_array
 
+def encode_star(fmt, data):
+    if len(data) != 1:
+        raise ValueError('Need single bytestring for *')
+    return data[0]
+ENCODERS['*'] = encode_star
+
 def encode(fmt, data):
     if not fmt:
         if data:
@@ -111,6 +117,10 @@ def decode_array(fmt, data, handle_trail):
         pass
     return (matches,) + decode(remainder_fmt, data, handle_trail)
 DECODERS['['] = decode_array
+
+def decode_star(fmt, data, handle_trail):
+    return (data,) + handle_trail(b'')
+DECODERS['*'] = decode_star
 
 def handle_trail_error(trailer):
     if not trailer:
