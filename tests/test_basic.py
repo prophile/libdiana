@@ -334,6 +334,17 @@ def test_dock_decode():
     pp = p.ShipAction1Packet.decode(b'\x07\x00\x00\x00\x00\x00\x00\x00')
     assert isinstance(pp, p.HelmRequestDockPacket)
 
+def test_ship_settings_encode():
+    sp = p.SetShipSettingsPacket(drive=p.DriveType.jump, type=p.ShipType.battleship, name='Art')
+    eq_(sp.encode(), b'\x16\x00\x00\x00\x01\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\x04\x00\x00\x00A\x00r\x00t\x00\x00\x00')
+
+def test_ship_settings_decode():
+    sp = p.ShipAction1Packet.decode(b'\x16\x00\x00\x00\x01\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\x04\x00\x00\x00A\x00r\x00t\x00\x00\x00')
+    assert isinstance(sp, p.SetShipSettingsPacket)
+    eq_(sp.drive, p.DriveType.jump)
+    eq_(sp.type, p.ShipType.battleship)
+    eq_(sp.name, 'Art')
+
 def test_cs_encode():
     cp = p.ConsoleStatusPacket(2, {p.Console.helm: p.ConsoleStatus.yours, p.Console.weapons: p.ConsoleStatus.unavailable})
     eq_(cp.encode(), b'\x02\x00\x00\x00\x00\x01\x02\x00\x00\x00\x00\x00\x00\x00')

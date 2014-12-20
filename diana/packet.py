@@ -408,11 +408,32 @@ class ShipAction1Packet:
             return SetShipPacket.decode(packet)
         if subtype_index == 14:
             return SetConsolePacket.decode(packet)
+        if subtype_index == 22:
+            return SetShipSettingsPacket.decode(packet)
         if subtype_index == 26:
             return TogglePerspectivePacket.decode(packet)
         if subtype_index == 27:
             return ClimbDivePacket.decode(packet)
         raise SoftDecodeFailure()
+
+class SetShipSettingsPacket(ShipAction1Packet):
+    def __init__(self, drive, type, name):
+        self.drive = drive
+        self.type = type
+        self.name = name
+
+    def encode(self):
+        return pack('IIIIu', 0x16, self.drive.value, self.type.value, 1, self.name)
+
+    @classmethod
+    def decode(cls, packet):
+        _id, drv, typ, _unk, name = unpack('IIIIu', packet)
+        return cls(drive=DriveType(drv),
+                   type=ShipType(typ),
+                   name=name)
+
+    def __str__(self):
+        return '<SetShipSettingsPacket drive={0!r} type={1!r} name={2!r}>'.format(self.drive, self.type, self.name)
 
 class HelmRequestDockPacket(ShipAction1Packet):
     def encode(self):
