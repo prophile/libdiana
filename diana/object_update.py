@@ -300,6 +300,118 @@ def decode_obj_update_packet(packet):
                 packet = packet[4:]
             if fields & 0x80:
                 packet = packet[4:]
+        elif update_type == 0x0a:
+            _id, oid, fields, packet = unpack('BIB*', packet)
+            obj['object'] = oid
+            obj['type'] = ObjectType.torpedo
+            if fields & 0x01:
+                obj['x'], packet = unpack('f*', packet)
+            if fields & 0x02:
+                obj['y'], packet = unpack('f*', packet)
+            if fields & 0x04:
+                obj['z'], packet = unpack('f*', packet)
+            if fields & 0x08:
+                packet = packet[4:]
+            if fields & 0x10:
+                packet = packet[4:]
+            if fields & 0x20:
+                packet = packet[4:]
+            if fields & 0x40:
+                packet = packet[4:]
+            if fields & 0x80:
+                packet = packet[4:]
+        elif update_type == 0x0b:
+            _id, oid, fields, packet = unpack('BIB*', packet)
+            obj['object'] = oid
+            obj['type'] = ObjectType.blackhole
+            if fields & 0x01:
+                obj['x'], packet = unpack('f*', packet)
+            if fields & 0x02:
+                obj['y'], packet = unpack('f*', packet)
+            if fields & 0x04:
+                obj['z'], packet = unpack('f*', packet)
+            if fields & 0x08:
+                packet = packet[4:]
+            if fields & 0x10:
+                packet = packet[4:]
+            if fields & 0x20:
+                packet = packet[4:]
+            if fields & 0x40:
+                packet = packet[4:]
+            if fields & 0x80:
+                packet = packet[4:]
+        elif update_type == 0x0c:
+            _id, oid, fields, packet = unpack('BIB*', packet)
+            obj['object'] = oid
+            obj['type'] = ObjectType.asteroid
+            if fields & 0x01:
+                obj['x'], packet = unpack('f*', packet)
+            if fields & 0x02:
+                obj['y'], packet = unpack('f*', packet)
+            if fields & 0x04:
+                obj['z'], packet = unpack('f*', packet)
+            if fields & 0x08:
+                packet = packet[4:]
+            if fields & 0x10:
+                packet = packet[4:]
+            if fields & 0x20:
+                packet = packet[4:]
+            if fields & 0x40:
+                packet = packet[4:]
+            if fields & 0x80:
+                packet = packet[4:]
+        elif update_type == 0x0e:
+            _id, oid, fields, packet = unpack('BIB*', packet)
+            obj['object'] = oid
+            obj['type'] = ObjectType.monster
+            if fields & 0x01:
+                obj['x'], packet = unpack('f*', packet)
+            if fields & 0x02:
+                obj['y'], packet = unpack('f*', packet)
+            if fields & 0x04:
+                obj['z'], packet = unpack('f*', packet)
+            if fields & 0x08:
+                obj['name'], packet = unpack('u*', packet)
+            if fields & 0x10:
+                packet = packet[4:]
+            if fields & 0x20:
+                packet = packet[4:]
+            if fields & 0x40:
+                packet = packet[4:]
+            if fields & 0x80:
+                packet = packet[4:]
+        elif update_type == 0x0f:
+            _id, oid, fields_1, fields_2, packet = unpack('BIBB*', packet)
+            obj['object'] = oid
+            obj['type'] = ObjectType.whale
+            if fields_1 & 0x01:
+                obj['name'], packet = unpack('u*', packet)
+            if fields_1 & 0x02:
+                packet = packet[4:]
+            if fields_1 & 0x04:
+                packet = packet[4:]
+            if fields_1 & 0x08:
+                obj['x'], packet = unpack('f*', packet)
+            if fields_1 & 0x10:
+                obj['y'], packet = unpack('f*', packet)
+            if fields_1 & 0x20:
+                obj['z'], packet = unpack('f*', packet)
+            if fields_1 & 0x40:
+                obj['pitch'], packet = unpack('f*', packet)
+            if fields_1 & 0x80:
+                obj['roll'], packet = unpack('f*', packet)
+            if fields_2 & 0x01:
+                obj['heading'], packet = unpack('f*', packet)
+            if fields_2 & 0x02:
+                packet = packet[4:]
+            if fields_2 & 0x04:
+                packet = packet[4:]
+            if fields_2 & 0x08:
+                packet = packet[4:]
+            if fields_2 & 0x10:
+                packet = packet[4:]
+            if fields_2 & 0xe0:
+                raise ValueError('Unknown data keys for whale')
         else:
             raise ValueError('Unknown object type {}'.format(update_type))
         entries.append(obj)
