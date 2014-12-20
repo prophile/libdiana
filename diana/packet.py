@@ -287,11 +287,11 @@ class AutonomousDamconPacket(GameMessagePacket):
         self.autonomy = autonomy
 
     def encode(self):
-        return struct.pack('<II', 0x0b, int(self.autonomy))
+        return pack('II', 0x0b, int(self.autonomy))
 
     @classmethod
     def decode(cls, packet):
-        id_, autonomy = struct.unpack('<II', packet)
+        _id, autonomy = unpack('II', packet)
         return cls(bool(autonomy))
 
     def __str__(self):
@@ -405,11 +405,11 @@ class ClimbDivePacket(ShipAction1Packet):
         self.direction = direction
 
     def encode(self):
-        return struct.pack('<Ii', 27, self.direction)
+        return pack('Ii', 27, self.direction)
 
     @classmethod
     def decode(cls, packet):
-        _idx, direction = struct.unpack('<Ii', packet)
+        _id, direction = unpack('Ii', packet)
         return cls(direction)
 
     def __str__(self):
@@ -420,11 +420,11 @@ class SetMainScreenPacket(ShipAction1Packet):
         self.screen = screen
 
     def encode(self):
-        return struct.pack('<II', 1, self.screen.value)
+        return pack('II', 1, self.screen.value)
 
     @classmethod
     def decode(cls, packet):
-        _idx, screen_id = struct.unpack('<II', packet)
+        _idx, screen_id = unpack('II', packet)
         return cls(MainView(screen_id))
 
     def __str__(self):
@@ -436,11 +436,11 @@ class SetConsolePacket(ShipAction1Packet):
         self.selected = selected
 
     def encode(self):
-        return struct.pack('<III', 0x0e, self.console.value, 1 if self.selected else 0)
+        return pack('III', 0x0e, self.console.value, 1 if self.selected else 0)
 
     @classmethod
     def decode(cls, packet):
-        _idx, console_id, selected = struct.unpack('<III', packet)
+        _idx, console_id, selected = unpack('III', packet)
         return cls(Console(console_id), bool(selected))
 
     def __str__(self):
@@ -451,11 +451,11 @@ class HelmSetWarpPacket(ShipAction1Packet):
         self.warp = warp
 
     def encode(self):
-        return struct.pack('<II', 0, self.warp)
+        return pack('II', 0, self.warp)
 
     @classmethod
     def decode(cls, packet):
-        _idx, warp = struct.unpack('<II', packet)
+        _idx, warp = unpack('II', packet)
         return cls(warp)
 
     def __str__(self):
@@ -466,11 +466,11 @@ class SetShipPacket(ShipAction1Packet):
         self.ship = ship
 
     def encode(self):
-        return struct.pack('<II', 0x0d, self.ship)
+        return pack('II', 0x0d, self.ship)
 
     @classmethod
     def decode(cls, packet):
-        _idx, ship = struct.unpack('<II', packet)
+        _idx, ship = unpack('II', packet)
         return cls(ship)
 
     def __str__(self):
@@ -496,11 +496,11 @@ class HelmSetSteeringPacket(ShipAction3Packet):
         self.rudder = rudder
 
     def encode(self):
-        return struct.pack('<If', 1, self.rudder)
+        return pack('If', 1, self.rudder)
 
     @classmethod
     def decode(cls, packet):
-        _idx, rudder = struct.unpack('<If', packet)
+        _idx, rudder = unpack('If', packet)
         return cls(rudder)
 
     def __str__(self):
@@ -511,11 +511,11 @@ class HelmSetImpulsePacket(ShipAction3Packet):
         self.impulse = impulse
 
     def encode(self):
-        return struct.pack('<If', 0, self.impulse)
+        return pack('If', 0, self.impulse)
 
     @classmethod
     def decode(cls, packet):
-        _idx, impulse = struct.unpack('<If', packet)
+        _idx, impulse = unpack('If', packet)
         return cls(impulse)
 
     def __str__(self):
@@ -527,11 +527,11 @@ class HelmJumpPacket(ShipAction3Packet):
         self.distance = distance
 
     def encode(self):
-        return struct.pack('<Iff', 4, self.bearing / (math.pi * 2), self.distance / 50)
+        return pack('Iff', 4, self.bearing / (math.pi * 2), self.distance / 50)
 
     @classmethod
     def decode(cls, packet):
-        _idx, bearing, distance = struct.unpack('<Iff', packet)
+        _idx, bearing, distance = unpack('Iff', packet)
         return cls(bearing * (math.pi * 2), distance * 50)
 
     def __str__(self):
