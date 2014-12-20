@@ -1,6 +1,10 @@
 from .encoding import decode as unpack
 from .enumerations import *
 
+def unscramble_elites(field):
+    return {ability for ability in EliteAbility
+              if ability.value & field}
+
 def decode_obj_update_packet(packet):
     entries = []
     while packet:
@@ -97,6 +101,111 @@ def decode_obj_update_packet(packet):
                 packet = packet[4:]
             if fields_5 & 0x80:
                 raise ValueError('Unknown data keys for player vessel')
+        elif update_type == 0x04:
+            _id, oid, fields_1, fields_2, fields_3, fields_4, fields_5, fields_6, packet = unpack('BIBBBBBB*', packet)
+            obj['object'] = oid
+            obj['type'] = ObjectType.other_ship
+            if fields_1 & 0x01:
+                obj['name'], packet = unpack('u*', packet)
+            if fields_1 & 0x02:
+                packet = packet[4:]
+            if fields_1 & 0x04:
+                obj['rudder'], packet = unpack('f*', packet)
+            if fields_1 & 0x08:
+                obj['max-impulse'], packet = unpack('f*', packet)
+            if fields_1 & 0x10:
+                obj['max-turn-rate'], packet = unpack('f*', packet)
+            if fields_1 & 0x20:
+                fef, packet = unpack('I*', packet)
+                obj['iff-friendly'] = not bool(fef)
+            if fields_1 & 0x40:
+                obj['vtype'], packet = unpack('I*', packet)
+            if fields_1 & 0x80:
+                obj['x'], packet = unpack('f*', packet)
+            if fields_2 & 0x01:
+                obj['y'], packet = unpack('f*', packet)
+            if fields_2 & 0x02:
+                obj['z'], packet = unpack('f*', packet)
+            if fields_2 & 0x04:
+                obj['pitch'], packet = unpack('f*', packet)
+            if fields_2 & 0x08:
+                obj['roll'], packet = unpack('f*', packet)
+            if fields_2 & 0x10:
+                obj['heading'], packet = unpack('f*', packet)
+            if fields_2 & 0x20:
+                obj['speed'], packet = unpack('f*', packet)
+            if fields_2 & 0x40:
+                surr, packet = unpack('B*', packet)
+                obj['surrender'] = bool(surr)
+            if fields_2 & 0x80:
+                packet = packet[2:]
+            if fields_3 & 0x01:
+                obj['shields'], packet = unpack('f*', packet)
+            if fields_3 & 0x02:
+                obj['shields-max'], packet = unpack('f*', packet)
+            if fields_3 & 0x04:
+                obj['shields-aft'], packet = unpack('f*', packet)
+            if fields_3 & 0x08:
+                obj['shields-aft-max'], packet = unpack('f*', packet)
+            if fields_3 & 0x10:
+                packet = packet[2:]
+            if fields_3 & 0x20:
+                packet = packet[1:]
+            if fields_3 & 0x40:
+                elt, packet = unpack('I*', packet)
+                obj['elite'] = unscramble_elites(elt)
+            if fields_3 & 0x80:
+                elt, packet = unpack('I*', packet)
+                obj['elite-active'] = unscramble_elites(elt)
+            if fields_4 & 0x01:
+                scn, packet = unpack('I*', packet)
+                obj['scanned'] = bool(scn)
+            if fields_4 & 0x02:
+                obj['iff-side'], packet = unpack('I*', packet)
+            if fields_4 & 0x04:
+                packet = packet[4:]
+            if fields_4 & 0x08:
+                packet = packet[1:]
+            if fields_4 & 0x10:
+                packet = packet[1:]
+            if fields_4 & 0x20:
+                packet = packet[1:]
+            if fields_4 & 0x40:
+                packet = packet[1:]
+            if fields_4 & 0x80:
+                packet = packet[4:]
+            if fields_5 & 0x01:
+                packet = packet[4:]
+            if fields_5 & 0x02:
+                packet = packet[4:]
+            if fields_5 & 0x04:
+                obj['damage-beams'], packet = unpack('f*', packet)
+            if fields_5 & 0x08:
+                obj['damage-tubes'], packet = unpack('f*', packet)
+            if fields_5 & 0x10:
+                obj['damage-sensors'], packet = unpack('f*', packet)
+            if fields_5 & 0x20:
+                obj['damage-maneuvering'], packet = unpack('f*', packet)
+            if fields_5 & 0x40:
+                obj['damage-impulse'], packet = unpack('f*', packet)
+            if fields_5 & 0x80:
+                obj['damage-warp'], packet = unpack('f*', packet)
+            if fields_6 & 0x01:
+                obj['damage-shields'], packet = unpack('f*', packet)
+            if fields_6 & 0x02:
+                obj['damage-shields'], packet = unpack('f*', packet)
+            if fields_6 & 0x04:
+                obj['shields-0'], packet = unpack('f*', packet)
+            if fields_6 & 0x08:
+                obj['shields-1'], packet = unpack('f*', packet)
+            if fields_6 & 0x10:
+                obj['shields-2'], packet = unpack('f*', packet)
+            if fields_6 & 0x20:
+                obj['shields-3'], packet = unpack('f*', packet)
+            if fields_6 & 0x40:
+                obj['shields-4'], packet = unpack('f*', packet)
+            if fields_6 & 0x80:
+                raise ValueError('Unknown data key for NPC')
         elif update_type == 0x05:
             _id, oid, fields_1, fields_2, packet = unpack('BIBB*', packet)
             obj['object'] = oid

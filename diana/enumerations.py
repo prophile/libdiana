@@ -5,6 +5,19 @@ class PacketProvenance(Enum):
     server = 0x01
     client = 0x02
 
+class EliteAbility(Enum):
+    stealth = 0x0001
+    low_vis = 0x0002
+    cloak = 0x0004
+    het = 0x0008
+    warp = 0x0010
+    teleport = 0x0020
+    tractor = 0x0040
+    drones = 0x0080
+    anti_mine = 0x0100
+    anti_torp = 0x0200
+    shield_drain = 0x0400
+
 class GameType(Enum):
     siege = 0
     single_front = 1
