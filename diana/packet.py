@@ -335,8 +335,15 @@ class ObjectUpdatePacket:
         self.raw_data = raw_data
 
     @property
-    def records(self):
+    def _records(self):
         return decode_obj_update_packet(self.raw_data)
+
+    @property
+    def records(self):
+        try:
+            return self._records
+        except Exception:
+            return []
 
     @classmethod
     def decode(cls, packet):
@@ -349,7 +356,7 @@ class ObjectUpdatePacket:
 
     def __str__(self):
         try:
-            records = repr(self.records)
+            records = repr(self._records)
             return '<ObjectUpdatePacket records={}>'.format(records)
         except Exception as e:
             return '<ObjectUpdatePacket data={0!r} error={1!r}>'.format(self.raw_data, e)
