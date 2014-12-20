@@ -1,19 +1,15 @@
 import struct
-from enum import Enum
 import sys
 import math
 from .encoding import encode as base_pack, decode as unpack
-from collections import namedtuple
+from .object_update import decode_obj_update_packet
+from .enumerations import *
 
 def pack(fmt, *args):
     return base_pack(fmt, args)
 
 class SoftDecodeFailure(RuntimeError):
     pass
-
-class PacketProvenance(Enum):
-    server = 0x01
-    client = 0x02
 
 PACKETS = {}
 
@@ -79,14 +75,6 @@ class VersionPacket:
     def __str__(self):
         return "<VersionPacket {}.{}.{}>".format(self.major, self.minor, self.patch)
 
-class GameType(Enum):
-    siege = 0
-    single_front = 1
-    double_front = 2
-    deep_strike = 3
-    peacetime = 4
-    border_war = 5
-
 @packet(0x3de66711)
 class DifficultyPacket:
     def __init__(self, difficulty, game_type):
@@ -103,23 +91,6 @@ class DifficultyPacket:
 
     def __str__(self):
         return "<DifficultyPacket difficulty={} game_type={}>".format(self.difficulty, self.game_type)
-
-class Console(Enum):
-    main_screen = 0
-    helm = 1
-    weapons = 2
-    engineering = 3
-    science = 4
-    comms = 5
-    data = 6
-    observer = 7
-    captain_map = 8
-    game_master = 9
-
-class ConsoleStatus(Enum):
-    available = 0
-    yours = 1
-    unavailable = 2
 
 @packet(0x19c6e2d4)
 class ConsoleStatusPacket:
@@ -176,218 +147,6 @@ class IntelPacket:
 
     def __str__(self):
         return '<IntelPacket object={0} intel={1!r}>'.format(self.object, self.intel)
-
-class ObjectType(Enum):
-    player_vessel = 1
-    weapons_console = 2
-    engineering_console = 3
-    other_ship = 4
-    base = 5
-    mine = 6
-    anomaly = 7
-    nebula = 9
-    torpedo = 10
-    blackhole = 11
-    asteroid = 12
-    mesh = 13
-    monster = 14
-    whale = 15
-    drone = 16
-
-def decode_obj_update_packet(packet):
-    entries = []
-    while packet:
-        update_type = packet[0]
-        obj = {}
-        if update_type == 0x00:
-            break
-        elif update_type == 0x01:
-            _id, oid, fields_1, fields_2, fields_3, fields_4, fields_5, packet = unpack('BIBBBBB*', packet)
-            obj['object'] = oid
-            obj['type'] = ObjectType.player_vessel
-            if fields_1 & 0x01:
-                obj['tgt-weapons'], packet = unpack('I*', packet)
-            if fields_1 & 0x02:
-                obj['impulse'], packet = unpack('f*', packet)
-            if fields_1 & 0x04:
-                obj['rudder'], packet = unpack('f*', packet)
-            if fields_1 & 0x08:
-                obj['top-speed'], packet = unpack('f*', packet)
-            if fields_1 & 0x10:
-                obj['turn-rate'], packet = unpack('f*', packet)
-            if fields_1 & 0x20:
-                ab, packet = unpack('B*', packet)
-                obj['auto-beams'] = bool(ab)
-            if fields_1 & 0x40:
-                obj['warp'], packet = unpack('B*', packet)
-            if fields_1 & 0x80:
-                obj['energy'], packet = unpack('f*', packet)
-            if fields_2 & 0x01:
-                obj['shields-state'], packet = unpack('s*', packet)
-            if fields_2 & 0x02:
-                obj['index'], packet = unpack('I*', packet)
-            if fields_2 & 0x04:
-                obj['vtype'], packet = unpack('I*', packet)
-            if fields_2 & 0x08:
-                obj['x'], packet = unpack('f*', packet)
-            if fields_2 & 0x10:
-                obj['y'], packet = unpack('f*', packet)
-            if fields_2 & 0x20:
-                obj['z'], packet = unpack('f*', packet)
-            if fields_2 & 0x40:
-                obj['pitch'], packet = unpack('f*', packet)
-            if fields_2 & 0x80:
-                obj['roll'], packet = unpack('f*', packet)
-            if fields_3 & 0x01:
-                obj['heading'], packet = unpack('f*', packet)
-            if fields_3 & 0x02:
-                obj['speed'], packet = unpack('f*', packet)
-            if fields_3 & 0x04:
-                _unk, packet = unpack('S*', packet)
-            if fields_3 & 0x08:
-                obj['name'], packet = unpack('u*', packet)
-            if fields_3 & 0x10:
-                obj['shields'], packet = unpack('f*', packet)
-            if fields_3 & 0x20:
-                obj['shields-max'], packet = unpack('f*', packet)
-            if fields_3 & 0x40:
-                obj['shields-aft'], packet = unpack('f*', packet)
-            if fields_3 & 0x80:
-                obj['shields-aft-max'], packet = unpack('f*', packet)
-            if fields_4 & 0x01:
-                obj['docked'], packet = unpack('I*', packet)
-            if fields_4 & 0x02:
-                red_alert, packet = unpack('B*', packet)
-                obj['red-alert'] = bool(red_alert)
-            if fields_4 & 0x04:
-                packet = packet[4:]
-            if fields_4 & 0x08:
-                ms, packet = unpack('B*', packet)
-                obj['main-view'] = MainView(ms)
-            if fields_4 & 0x10:
-                obj['beam-frequency'], packet = unpack('B*', packet)
-            if fields_4 & 0x20:
-                obj['coolant-avail'], packet = unpack('B*', packet)
-            if fields_4 & 0x40:
-                obj['tgt-science'], packet = unpack('I*', packet)
-            if fields_4 & 0x80:
-                obj['tgt-captain'], packet = unpack('I*', packet)
-            if fields_5 & 0x01:
-                dt, packet = unpack('B*', packet)
-                obj['drive-type'] = DriveType(dt)
-            if fields_5 & 0x02:
-                obj['tgt-scan'], packet = unpack('I*', packet)
-            if fields_5 & 0x04:
-                obj['scan-progress'], packet = unpack('f*', packet)
-            if fields_5 & 0x08:
-                rv, packet = unpack('B*', packet)
-                obj['reverse'] = bool(rv)
-            if fields_5 & 0x10:
-                packet = packet[4:]
-            if fields_5 & 0x20:
-                packet = packet[1:]
-            if fields_5 & 0x40:
-                packet = packet[4:]
-            if fields_5 & 0x80:
-                raise ValueError('Unknown data keys for player vessel')
-        elif update_type == 0x05:
-            _id, oid, fields_1, fields_2, packet = unpack('BIBB*', packet)
-            obj['object'] = oid
-            obj['type'] = ObjectType.base
-            if fields_1 & 0x01:
-                obj['name'], packet = unpack('u*', packet)
-            if fields_1 & 0x02:
-                obj['shields'], packet = unpack('f*', packet)
-            if fields_1 & 0x04:
-                obj['shields-aft'], packet = unpack('f*', packet)
-            if fields_1 & 0x08:
-                obj['index'], packet = unpack('I*', packet)
-            if fields_1 & 0x10:
-                obj['vtype'], packet = unpack('I*', packet)
-            if fields_1 & 0x20:
-                obj['x'], packet = unpack('f*', packet)
-            if fields_1 & 0x40:
-                obj['y'], packet = unpack('f*', packet)
-            if fields_1 & 0x80:
-                obj['z'], packet = unpack('f*', packet)
-            if fields_2 & 0x01:
-                packet = packet[4:]
-            if fields_2 & 0x02:
-                packet = packet[4:]
-            if fields_2 & 0x04:
-                packet = packet[4:]
-            if fields_2 & 0x08:
-                packet = packet[4:]
-            if fields_2 & 0x10:
-                packet = packet[1:]
-            if fields_2 & 0x20:
-                packet = packet[1:]
-            if fields_2 & 0xc0:
-                raise ValueError('Unknown data keys for base')
-        elif update_type == 0x06:
-            _id, oid, fields, packet = unpack('BIB*', packet)
-            obj['object'] = oid
-            obj['type'] = ObjectType.mine
-            if fields & 0x01:
-                obj['x'] = unpack('f*', packet)
-            if fields & 0x02:
-                obj['y'] = unpack('f*', packet)
-            if fields & 0x04:
-                obj['z'] = unpack('f*', packet)
-            if fields & 0x08:
-                packet = packet[4:]
-            if fields & 0x10:
-                packet = packet[4:]
-            if fields & 0x20:
-                packet = packet[4:]
-            if fields & 0x40:
-                packet = packet[4:]
-            if fields & 0x80:
-                packet = packet[4:]
-        elif update_type == 0x07:
-            _id, oid, fields, packet = unpack('BIB*', packet)
-            obj['object'] = oid
-            obj['type'] = ObjectType.anomaly
-            if fields & 0x01:
-                obj['x'] = unpack('f*', packet)
-            if fields & 0x02:
-                obj['y'] = unpack('f*', packet)
-            if fields & 0x04:
-                obj['z'] = unpack('f*', packet)
-            if fields & 0x08:
-                obj['name'], packet = unpack('u*', packet)
-            if fields & 0x10:
-                packet = packet[4:]
-            if fields & 0x20:
-                packet = packet[4:]
-            if fields & 0x40:
-                packet = packet[4:]
-            if fields & 0x80:
-                packet = packet[4:]
-        elif update_type == 0x09:
-            _id, oid, fields, packet = unpack('BIB*', packet)
-            obj['object'] = oid
-            obj['type'] = ObjectType.nebula
-            if fields & 0x01:
-                obj['x'], packet = unpack('f*', packet)
-            if fields & 0x02:
-                obj['y'], packet = unpack('f*', packet)
-            if fields & 0x04:
-                obj['z'], packet = unpack('f*', packet)
-            if fields & 0x08:
-                obj['red'], packet = unpack('f*', packet)
-            if fields & 0x10:
-                obj['green'], packet = unpack('f*', packet)
-            if fields & 0x20:
-                obj['blue'], packet = unpack('f*', packet)
-            if fields & 0x40:
-                packet = packet[4:]
-            if fields & 0x80:
-                packet = packet[4:]
-        else:
-            raise ValueError('Unknown object type {}'.format(update_type))
-        entries.append(obj)
-    return entries
 
 @packet(0x80803df9)
 class ObjectUpdatePacket:
@@ -501,19 +260,6 @@ class GameEndPacket(GameMessagePacket):
     def __str__(self):
         return '<GameEndPacket>'
 
-class DriveType(Enum):
-    warp = 0
-    jump = 1
-
-class ShipType(Enum):
-    light_cruiser = 0
-    scout = 1
-    battleship = 2
-    missile_cruiser = 3
-    dreadnought = 4
-
-ShipSettingsRecord = namedtuple('ShipSettingsRecord', 'drive type name')
-
 class AllShipSettingsPacket(GameMessagePacket):
     def __init__(self, ships):
         self.ships = list(ships)
@@ -620,15 +366,6 @@ class AutonomousDamconPacket(GameMessagePacket):
 
     def __str__(self):
         return '<AutonomousDamconPacket autonomy={0!r}>'.format(self.autonomy)
-
-class MainView(Enum):
-    forward = 0
-    port = 1
-    starboard = 2
-    aft = 3
-    tactical = 4
-    lrs = 5
-    status = 6
 
 @packet(0x4c821d3c)
 class ShipAction1Packet:
