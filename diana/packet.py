@@ -159,13 +159,6 @@ class HeartbeatPacket:
     def __str__(self):
         return "<HeartbeatPacket>"
 
-def pack_string(s):
-    packed = s.encode('utf-16le') + b'\x00\x00'
-    return struct.pack('<I', len(packed) // 2) + packed
-
-def unpack_string(s):
-    return s[4:-2].decode('utf-16le')
-
 @packet(0xee665279)
 class IntelPacket:
     def __init__(self, object, intel):
@@ -173,12 +166,11 @@ class IntelPacket:
         self.intel = intel
 
     def encode(self):
-        return struct.pack('<Ib', self.object, 3) + pack_string(self.intel)
+        return pack('Ibu', self.object, 3, self.intel)
 
     @classmethod
     def decode(cls, packet):
-        object, unknown_1 = struct.unpack('<Ib', packet[:5])
-        intel = unpack_string(packet[5:])
+        object, _unk, intel = unpack('Ibu', packet)
         return cls(object, intel)
 
     def __str__(self):
@@ -265,15 +257,12 @@ class DmxPacket(GameMessagePacket):
         self.state = state
 
     def encode(self):
-        return (struct.pack('<I', 0x10) +
-                pack_string(self.flag) +
-                struct.pack('<I', int(self.state)))
+        return pack('IuI', 0x10, self.flag, int(self.state))
 
     @classmethod
     def decode(cls, packet):
-        data = unpack_string(packet[4:-4])
-        flag, = struct.unpack('<I', packet[-4:])
-        return cls(data, bool(flag))
+        _id, flag, state = unpack('IuI', packet)
+        return cls(flag, state)
 
     def __str__(self):
         return '<DmxPacket flag={0!r} state={1!r}>'.format(self.flag, self.state)
@@ -283,11 +272,12 @@ class PopupPacket(GameMessagePacket):
         self.message = message
 
     def encode(self):
-        return b'\x0a\x00\x00\x00' + pack_string(self.message)
+        return pack('Iu', 0x0a, self.message)
 
     @classmethod
     def decode(cls, packet):
-        return cls(unpack_string(packet[4:]))
+        _id, message = unpack('Iu', packet)
+        return cls(message)
 
     def __str__(self):
         return '<PopupPacket message={0!r}>'.format(self.message)
