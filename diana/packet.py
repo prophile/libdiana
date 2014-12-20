@@ -406,6 +406,8 @@ class ShipAction1Packet:
             return ToggleRedAlertPacket.decode(packet)
         if subtype_index == 13:
             return SetShipPacket.decode(packet)
+        if subtype_index == 15:
+            return ReadyPacket.decode(packet)
         if subtype_index == 14:
             return SetConsolePacket.decode(packet)
         if subtype_index == 22:
@@ -415,6 +417,19 @@ class ShipAction1Packet:
         if subtype_index == 27:
             return ClimbDivePacket.decode(packet)
         raise SoftDecodeFailure()
+
+class ReadyPacket(ShipAction1Packet):
+    def encode(self):
+        return b'\x0f\x00\x00\x00\x00\x00\x00\x00'
+
+    @classmethod
+    def decode(cls, packet):
+        if packet != b'\x0f\x00\x00\x00\x00\x00\x00\x00':
+            raise ValueError('Unexpected payload in ready packet')
+        return cls()
+
+    def __str__(self):
+        return '<ReadyPacket>'
 
 class SetShipSettingsPacket(ShipAction1Packet):
     def __init__(self, drive, type, name):

@@ -345,6 +345,14 @@ def test_ship_settings_decode():
     eq_(sp.type, p.ShipType.battleship)
     eq_(sp.name, 'Art')
 
+def test_ready_encode():
+    rp = p.ReadyPacket()
+    eq_(rp.encode(), b'\x0f\x00\x00\x00\x00\x00\x00\x00')
+
+def test_ready_decode():
+    rp = p.ShipAction1Packet.decode(b'\x0f\x00\x00\x00\x00\x00\x00\x00')
+    assert isinstance(rp, p.ReadyPacket)
+
 def test_cs_encode():
     cp = p.ConsoleStatusPacket(2, {p.Console.helm: p.ConsoleStatus.yours, p.Console.weapons: p.ConsoleStatus.unavailable})
     eq_(cp.encode(), b'\x02\x00\x00\x00\x00\x01\x02\x00\x00\x00\x00\x00\x00\x00')
