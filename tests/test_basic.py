@@ -335,3 +335,14 @@ def test_cs_decode():
     eq_(cp.consoles[p.Console.weapons], p.ConsoleStatus.unavailable)
     eq_(cp.consoles[p.Console.data], p.ConsoleStatus.available)
 
+def test_destroy_encode():
+    dp = p.DestroyObjectPacket(type=p.ObjectType.blackhole,
+                               object=0xaabbccdd)
+    eq_(dp.encode(), b'\x0b\xdd\xcc\xbb\xaa')
+
+def test_destroy_decode():
+    dp = p.DestroyObjectPacket.decode(b'\x0b\xdd\xcc\xbb\xaa')
+    assert isinstance(dp, p.DestroyObjectPacket)
+    eq_(dp.type, p.ObjectType.blackhole)
+    eq_(dp.object, 0xaabbccdd)
+
