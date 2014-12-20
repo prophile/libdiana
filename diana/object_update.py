@@ -245,11 +245,11 @@ def decode_obj_update_packet(packet):
             obj['object'] = oid
             obj['type'] = ObjectType.mine
             if fields & 0x01:
-                obj['x'] = unpack('f*', packet)
+                obj['x'], packet = unpack('f*', packet)
             if fields & 0x02:
-                obj['y'] = unpack('f*', packet)
+                obj['y'], packet = unpack('f*', packet)
             if fields & 0x04:
-                obj['z'] = unpack('f*', packet)
+                obj['z'], packet = unpack('f*', packet)
             if fields & 0x08:
                 packet = packet[4:]
             if fields & 0x10:
@@ -265,11 +265,11 @@ def decode_obj_update_packet(packet):
             obj['object'] = oid
             obj['type'] = ObjectType.anomaly
             if fields & 0x01:
-                obj['x'] = unpack('f*', packet)
+                obj['x'], packet = unpack('f*', packet)
             if fields & 0x02:
-                obj['y'] = unpack('f*', packet)
+                obj['y'], packet = unpack('f*', packet)
             if fields & 0x04:
-                obj['z'] = unpack('f*', packet)
+                obj['z'], packet = unpack('f*', packet)
             if fields & 0x08:
                 obj['name'], packet = unpack('u*', packet)
             if fields & 0x10:
