@@ -22,7 +22,7 @@ DECODE_TESTS = [ ('', (), ()),
                          ([(0x12, 0x34), (0x56, 0x78)],)),
                  ('B[BB]B', (0x12, 0x34, 0x56, 0x78),
                             (0x12, [(0x34, 0x56)], 0x78)),
-                 ('B[]', (0x12,), (0x12, [])) ]
+                 ('B[B]', (0x12,), (0x12, [])) ]
 
 def test_encode():
     def code(fmt, coded, uncoded):

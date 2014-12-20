@@ -98,7 +98,6 @@ def decode_array(fmt, data, handle_trail):
         raise ValueError('Bad format; unbalanced brackets')
     remainder_fmt = fmt[(end_index+1):]
     this_fmt = fmt[1:end_index]
-    print('Matching as many {0!r}'.format(this_fmt))
     matches = []
     try:
         def internal_handle_trail(trail):
