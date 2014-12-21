@@ -21,5 +21,6 @@ setup(name='libdiana',
       url='https://github.com/prophile/libdiana',
       zip_safe=True,
       setup_requires=['nose >=1.0'],
-      packages=find_packages())
+      packages=find_packages(),
+      test_suite='nose.collector')
 
