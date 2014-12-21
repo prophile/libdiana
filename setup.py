@@ -4,9 +4,6 @@ if sys.version < '3.4':
     print('Sorry, this is not a compatible version of Python. Use 3.4 or later.')
     exit(1)
 
-import ez_setup
-ez_setup.use_setuptools()
-
 from setuptools import setup, find_packages
 
 with open('README.md') as f:
