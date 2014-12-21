@@ -292,6 +292,24 @@ def test_tgt_sci_decode_targetted():
     assert isinstance(pp, p.SciSelectPacket)
     eq_(pp.object, 2)
 
+def test_tgt_capt_encode():
+    pp = p.CaptainSelectPacket(None)
+    eq_(pp.encode(), b'\x11\x00\x00\x00\x01\x00\x00\x00')
+
+def test_tgt_capt_encode_targetted():
+    pp = p.CaptainSelectPacket(3)
+    eq_(pp.encode(), b'\x11\x00\x00\x00\x03\x00\x00\x00')
+
+def test_tgt_capt_decode():
+    pp = p.ShipAction1Packet.decode(b'\x11\x00\x00\x00\x01\x00\x00\x00')
+    assert isinstance(pp, p.CaptainSelectPacket)
+    eq_(pp.object, None)
+
+def test_tgt_capt_decode_targetted():
+    pp = p.ShipAction1Packet.decode(b'\x11\x00\x00\x00\x02\x00\x00\x00')
+    assert isinstance(pp, p.CaptainSelectPacket)
+    eq_(pp.object, 2)
+
 def test_impulse_encode():
     pp = p.HelmSetImpulsePacket(0.0)
     eq_(pp.encode(), b'\x00\x00\x00\x00\x00\x00\x00\x00')

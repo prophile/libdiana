@@ -416,6 +416,8 @@ class ShipAction1Packet:
             return ReadyPacket.decode(packet)
         if subtype_index == 16:
             return SciSelectPacket.decode(packet)
+        if subtype_index == 17:
+            return CaptainSelectPacket.decode(packet)
         if subtype_index == 18:
             return GameMasterSelectPacket.decode(packet)
         if subtype_index == 19:
@@ -446,6 +448,27 @@ class SciScanPacket(ShipAction1Packet):
 
     def __str__(self):
         return "<SciScanPacket target={0!r}>".format(self.target)
+
+class CaptainSelectPacket(ShipAction1Packet):
+    def __init__(self, object):
+        self.object = object
+
+    def encode(self):
+        if self.object is not None:
+            return pack('II', 17, self.object)
+        else:
+            return pack('II', 17, 1)
+
+    @classmethod
+    def decode(cls, packet):
+        _idx, tgt = unpack('II', packet)
+        if tgt != 1:
+            return cls(tgt)
+        else:
+            return cls(None)
+
+    def __str__(self):
+        return "<CaptainSelectPacket object={0!r}>".format(self.object)
 
 class GameMasterSelectPacket(ShipAction1Packet):
     def __init__(self, object):
