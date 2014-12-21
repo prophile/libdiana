@@ -20,7 +20,7 @@ setup(name='libdiana',
       long_description=description,
       url='https://github.com/prophile/libdiana',
       zip_safe=True,
-      setup_requires=['nose >=1.0'],
+      setup_requires=['nose >=1, <2'],
       packages=find_packages(),
       test_suite='nose.collector')
 
