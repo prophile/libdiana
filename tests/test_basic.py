@@ -509,3 +509,38 @@ def test_destroy_decode():
     eq_(dp.type, p.ObjectType.blackhole)
     eq_(dp.object, 0xaabbccdd)
 
+BEAM_PACKET = (b'\xbe\xff\x00\x00'
+               b'\x00\x00\x00\x00'
+               b'\xb0\x04\x00\x00'
+               b'\x01\x00\x00\x00'
+               b'\x01\x00\x00\x00'
+               b'\x01\x00\x00\x00'
+               b'\x00\xff\x00\x00'
+               b'\x7a\xff\x00\x00'
+               b'\x00\x00\x00\x00'
+               b'\x00\x00\x00\x00'
+               b'\x00\x00\x00\x00'
+               b'\x00\x00\x00\x00')
+
+def test_beam_encode():
+    bp = p.BeamFiredPacket(object=0xffbe,
+                           port=1,
+                           origin=0xff00,
+                           target=0xff7a,
+                           x=0.0,
+                           y=0.0,
+                           z=0.0,
+                           auto=True)
+    eq_(bp.encode(), BEAM_PACKET)
+
+def test_beam_decode():
+    bp = p.BeamFiredPacket.decode(BEAM_PACKET)
+    eq_(bp.object, 0xffbe)
+    eq_(bp.port, 1)
+    eq_(bp.origin, 0xff00)
+    eq_(bp.target, 0xff7a)
+    eq_(bp.x, 0.0)
+    eq_(bp.y, 0.0)
+    eq_(bp.z, 0.0)
+    eq_(bp.auto, True)
+

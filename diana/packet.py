@@ -869,6 +869,35 @@ class HelmJumpPacket(ShipAction3Packet):
     def __str__(self):
         return '<HelmJumpPacket bearing={0!r} distance={1!r}>'.format(self.bearing, self.distance)
 
+@packet(0xb83fd2c4)
+class BeamFiredPacket:
+    def __init__(self, object, port, origin, target, x, y, z, auto):
+        self.object = object
+        self.port = port
+        self.origin = origin
+        self.target = target
+        self.x = x
+        self.y = y
+        self.z = z
+        self.auto = auto
+
+    def encode(self):
+        return pack('IIIIIIIIfffI',
+                    self.object, 0, 1200,
+                    self.port,
+                    1, 1,
+                    self.origin, self.target,
+                    self.x, self.y, self.z,
+                    0 if self.auto else 1)
+
+    @classmethod
+    def decode(cls, packet):
+        object, _unk1, _unk2, port, _unk3, _unk4, origin, target, x, y, z, auto = unpack('IIIIIIIIfffI', packet)
+        return cls(object, port, origin, target, x, y, z, [True, False][auto])
+
+    def __str__(self):
+        return '<BeamFiredPacket object={object} port={port} origin={origin} target={target} position=({x}, {y}, {z}) automatic={auto!r}>'.format(**self.__dict__)
+
 def encode(packet, provenance=PacketProvenance.client):
     encoded_block = packet.encode()
     block_len = len(encoded_block)
