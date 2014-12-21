@@ -238,6 +238,60 @@ def test_beam_freq_decode():
     assert isinstance(pp, p.SetBeamFreqPacket)
     eq_(pp.freq, 1)
 
+def test_tgt_weap_encode():
+    pp = p.SetWeaponsTargetPacket(None)
+    eq_(pp.encode(), b'\x02\x00\x00\x00\x01\x00\x00\x00')
+
+def test_tgt_weap_encode_targetted():
+    pp = p.SetWeaponsTargetPacket(3)
+    eq_(pp.encode(), b'\x02\x00\x00\x00\x03\x00\x00\x00')
+
+def test_tgt_weap_decode():
+    pp = p.ShipAction1Packet.decode(b'\x02\x00\x00\x00\x01\x00\x00\x00')
+    assert isinstance(pp, p.SetWeaponsTargetPacket)
+    eq_(pp.object, None)
+
+def test_tgt_weap_decode_targetted():
+    pp = p.ShipAction1Packet.decode(b'\x02\x00\x00\x00\x02\x00\x00\x00')
+    assert isinstance(pp, p.SetWeaponsTargetPacket)
+    eq_(pp.object, 2)
+
+def test_tgt_gm_encode():
+    pp = p.GameMasterSelectPacket(None)
+    eq_(pp.encode(), b'\x12\x00\x00\x00\x01\x00\x00\x00')
+
+def test_tgt_gm_encode_targetted():
+    pp = p.GameMasterSelectPacket(3)
+    eq_(pp.encode(), b'\x12\x00\x00\x00\x03\x00\x00\x00')
+
+def test_tgt_gm_decode():
+    pp = p.ShipAction1Packet.decode(b'\x12\x00\x00\x00\x01\x00\x00\x00')
+    assert isinstance(pp, p.GameMasterSelectPacket)
+    eq_(pp.object, None)
+
+def test_tgt_gm_decode_targetted():
+    pp = p.ShipAction1Packet.decode(b'\x12\x00\x00\x00\x02\x00\x00\x00')
+    assert isinstance(pp, p.GameMasterSelectPacket)
+    eq_(pp.object, 2)
+
+def test_tgt_sci_encode():
+    pp = p.SciSelectPacket(None)
+    eq_(pp.encode(), b'\x10\x00\x00\x00\x01\x00\x00\x00')
+
+def test_tgt_sci_encode_targetted():
+    pp = p.SciSelectPacket(3)
+    eq_(pp.encode(), b'\x10\x00\x00\x00\x03\x00\x00\x00')
+
+def test_tgt_sci_decode():
+    pp = p.ShipAction1Packet.decode(b'\x10\x00\x00\x00\x01\x00\x00\x00')
+    assert isinstance(pp, p.SciSelectPacket)
+    eq_(pp.object, None)
+
+def test_tgt_sci_decode_targetted():
+    pp = p.ShipAction1Packet.decode(b'\x10\x00\x00\x00\x02\x00\x00\x00')
+    assert isinstance(pp, p.SciSelectPacket)
+    eq_(pp.object, 2)
+
 def test_impulse_encode():
     pp = p.HelmSetImpulsePacket(0.0)
     eq_(pp.encode(), b'\x00\x00\x00\x00\x00\x00\x00\x00')
@@ -273,6 +327,15 @@ def test_ra_encode():
 def test_ra_decode():
     rp = p.ShipAction1Packet.decode(b'\x0a\x00\x00\x00\x00\x00\x00\x00')
     assert isinstance(rp, p.ToggleRedAlertPacket)
+
+def test_scan_encode():
+    rp = p.SciScanPacket(3)
+    eq_(rp.encode(), b'\x13\x00\x00\x00\x03\x00\x00\x00')
+
+def test_scan_decode():
+    rp = p.ShipAction1Packet.decode(b'\x13\x00\x00\x00\x03\x00\x00\x00')
+    assert isinstance(rp, p.SciScanPacket)
+    eq_(rp.target, 3)
 
 def test_shields_encode():
     rp = p.ToggleShieldsPacket()

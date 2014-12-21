@@ -396,6 +396,8 @@ class ShipAction1Packet:
             return HelmSetWarpPacket.decode(packet)
         if subtype_index == 1:
             return SetMainScreenPacket.decode(packet)
+        if subtype_index == 2:
+            return SetWeaponsTargetPacket.decode(packet)
         if subtype_index == 3:
             return ToggleAutoBeamsPacket.decode(packet)
         if subtype_index == 4:
@@ -408,10 +410,16 @@ class ShipAction1Packet:
             return SetBeamFreqPacket.decode(packet)
         if subtype_index == 13:
             return SetShipPacket.decode(packet)
-        if subtype_index == 15:
-            return ReadyPacket.decode(packet)
         if subtype_index == 14:
             return SetConsolePacket.decode(packet)
+        if subtype_index == 15:
+            return ReadyPacket.decode(packet)
+        if subtype_index == 16:
+            return SciSelectPacket.decode(packet)
+        if subtype_index == 18:
+            return GameMasterSelectPacket.decode(packet)
+        if subtype_index == 19:
+            return SciScanPacket.decode(packet)
         if subtype_index == 22:
             return SetShipSettingsPacket.decode(packet)
         if subtype_index == 24:
@@ -423,6 +431,84 @@ class ShipAction1Packet:
         if subtype_index == 27:
             return ClimbDivePacket.decode(packet)
         raise SoftDecodeFailure()
+
+class SciScanPacket(ShipAction1Packet):
+    def __init__(self, target):
+        self.target = target
+
+    def encode(self):
+        return pack('II', 19, self.target)
+
+    @classmethod
+    def decode(cls, packet):
+        _idx, tgt = unpack('II', packet)
+        return cls(tgt)
+
+    def __str__(self):
+        return "<SciScanPacket target={0!r}>".format(self.target)
+
+class GameMasterSelectPacket(ShipAction1Packet):
+    def __init__(self, object):
+        self.object = object
+
+    def encode(self):
+        if self.object is not None:
+            return pack('II', 18, self.object)
+        else:
+            return pack('II', 18, 1)
+
+    @classmethod
+    def decode(cls, packet):
+        _idx, tgt = unpack('II', packet)
+        if tgt != 1:
+            return cls(tgt)
+        else:
+            return cls(None)
+
+    def __str__(self):
+        return "<GameMasterSelectPacket object={0!r}>".format(self.object)
+
+class SciSelectPacket(ShipAction1Packet):
+    def __init__(self, object):
+        self.object = object
+
+    def encode(self):
+        if self.object is not None:
+            return pack('II', 16, self.object)
+        else:
+            return pack('II', 16, 1)
+
+    @classmethod
+    def decode(cls, packet):
+        _idx, tgt = unpack('II', packet)
+        if tgt != 1:
+            return cls(tgt)
+        else:
+            return cls(None)
+
+    def __str__(self):
+        return "<SciSelectPacket object={0!r}>".format(self.object)
+
+class SetWeaponsTargetPacket(ShipAction1Packet):
+    def __init__(self, object):
+        self.object = object
+
+    def encode(self):
+        if self.object is not None:
+            return pack('II', 2, self.object)
+        else:
+            return pack('II', 2, 1)
+
+    @classmethod
+    def decode(cls, packet):
+        _idx, tgt = unpack('II', packet)
+        if tgt != 1:
+            return cls(tgt)
+        else:
+            return cls(None)
+
+    def __str__(self):
+        return "<SetWeaponsTargetPacket object={0!r}>".format(self.object)
 
 class SetBeamFreqPacket(ShipAction1Packet):
     def __init__(self, freq):
