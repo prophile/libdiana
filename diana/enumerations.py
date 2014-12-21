@@ -82,3 +82,15 @@ class MainView(Enum):
     lrs = 5
     status = 6
 
+class TubeStatus(Enum):
+    unloaded = 0
+    loaded = 1
+    loading = 2
+    unloading = 3
+
+class OrdnanceType(Enum):
+    missile = 0
+    nuke = 1
+    mine = 2
+    emp = 3
+

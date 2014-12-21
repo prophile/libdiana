@@ -101,6 +101,91 @@ def decode_obj_update_packet(packet):
                 packet = packet[4:]
             if fields_5 & 0x80:
                 raise ValueError('Unknown data keys for player vessel')
+        elif update_type == 0x02:
+            _id, oid, fields_1, fields_2, fields_3, packet = unpack('BIBBB*', packet)
+            obj['object'] = oid
+            obj['type'] = ObjectType.weapons_console
+            if fields_1 & 0x01: # TODO: use the enum here
+                obj['store-missile'], packet = unpack('B*', packet)
+            if fields_1 & 0x02:
+                obj['store-nuke'], packet = unpack('B*', packet)
+            if fields_1 & 0x04:
+                obj['store-mine'], packet = unpack('B*', packet)
+            if fields_1 & 0x08:
+                obj['store-emp'], packet = unpack('B*', packet)
+            if fields_1 & 0x10:
+                packet = packet[1:]
+            if fields_1 & 0x20:
+                obj['load-time-0'], packet = unpack('f*', packet)
+            if fields_1 & 0x40:
+                obj['load-time-1'], packet = unpack('f*', packet)
+            if fields_1 & 0x80:
+                obj['load-time-2'], packet = unpack('f*', packet)
+            if fields_2 & 0x01:
+                obj['load-time-3'], packet = unpack('f*', packet)
+            if fields_2 & 0x02:
+                obj['load-time-4'], packet = unpack('f*', packet)
+            if fields_2 & 0x04:
+                obj['load-time-5'], packet = unpack('f*', packet)
+            if fields_2 & 0x08:
+                ts, packet = unpack('B*', packet)
+                obj['status-0'] = TubeStatus(ts)
+            if fields_2 & 0x10:
+                ts, packet = unpack('B*', packet)
+                obj['status-1'] = TubeStatus(ts)
+            if fields_2 & 0x20:
+                ts, packet = unpack('B*', packet)
+                obj['status-2'] = TubeStatus(ts)
+            if fields_2 & 0x40:
+                ts, packet = unpack('B*', packet)
+                obj['status-3'] = TubeStatus(ts)
+            if fields_2 & 0x80:
+                ts, packet = unpack('B*', packet)
+                obj['status-4'] = TubeStatus(ts)
+            if fields_3 & 0x01:
+                ts, packet = unpack('B*', packet)
+                obj['status-5'] = TubeStatus(ts)
+            if fields_3 & 0x02:
+                ot, packet = unpack('B*', packet)
+                obj['contents-0'] = OrdnanceType(ot)
+            if fields_3 & 0x04:
+                ot, packet = unpack('B*', packet)
+                obj['contents-1'] = OrdnanceType(ot)
+            if fields_3 & 0x08:
+                ot, packet = unpack('B*', packet)
+                obj['contents-2'] = OrdnanceType(ot)
+            if fields_3 & 0x10:
+                ot, packet = unpack('B*', packet)
+                obj['contents-3'] = OrdnanceType(ot)
+            if fields_3 & 0x20:
+                ot, packet = unpack('B*', packet)
+                obj['contents-4'] = OrdnanceType(ot)
+            if fields_3 & 0x40:
+                ot, packet = unpack('B*', packet)
+                obj['contents-5'] = OrdnanceType(ot)
+            if fields_3 & 0x80:
+                raise ValueError('Unknown fields for weapons console')
+        elif update_type == 0x03:
+            _id, oid, fields_heat, fields_enrg, fields_coolant, fields_unk, packet = unpack('BIBBBB*', packet)
+            obj['object'] = oid
+            obj['type'] = ObjectType.engineering_console
+            if fields_unk:
+                raise ValueError('Undecodable fields in engineering status')
+            systems = (('beams', 0x01),
+                       ('torps', 0x02),
+                       ('sensors', 0x04),
+                       ('maneuvering', 0x08),
+                       ('impulse', 0x10),
+                       ('warp', 0x20),
+                       ('shields', 0x40),
+                       ('shields-aft', 0x80))
+            types = (('heat', fields_heat, 'f'),
+                     ('energy', fields_enrg, 'f'),
+                     ('coolant', fields_coolant, 'B'))
+            for status, mask, fmt in types:
+                for syst, flag in systems:
+                    if fields_heat & flag:
+                        obj['{}-{}'.format(status, syst)], packet = unpack(fmt + '*', packet)
         elif update_type == 0x04:
             _id, oid, fields_1, fields_2, fields_3, fields_4, fields_5, fields_6, packet = unpack('BIBBBBBB*', packet)
             obj['object'] = oid
