@@ -404,10 +404,6 @@ class ShipAction1Packet:
             return ToggleShieldsPacket.decode(packet)
         if subtype_index == 7:
             return HelmRequestDockPacket.decode(packet)
-        if subtype_index == 8:
-            return FireTubePacket.decode(packet)
-        if subtype_index == 9:
-            return UnloadTubePacket.decode(packet)
         if subtype_index == 10:
             return ToggleRedAlertPacket.decode(packet)
         if subtype_index == 11:
@@ -750,63 +746,6 @@ class SetShipPacket(ShipAction1Packet):
 
     def __str__(self):
         return "<SetShipPacket ship={}>".format(self.ship)
-
-class FireTubePacket(ShipAction1Packet):
-    def __init__(self, tube):
-        self.tube = tube
-
-    def encode(self):
-        return pack('II', 8, self.tube)
-
-    @classmethod
-    def decode(cls, packet):
-        _id, tube = unpack('II', packet)
-        return cls(tube)
-
-    def __str__(self):
-        return '<FireTubePacket tube={0}>'.format(self.tube)
-
-class UnloadTubePacket(ShipAction1Packet):
-    def __init__(self, tube):
-        self.tube = tube
-
-    def encode(self):
-        return pack('II', 9, self.tube)
-
-    @classmethod
-    def decode(cls, packet):
-        _id, tube = unpack('II', packet)
-        return cls(tube)
-
-    def __str__(self):
-        return '<UnloadTubePacket tube={0}>'.format(self.tube)
-
-@packet(0x69cc01d9)
-class ShipAction2Packet:
-    @classmethod
-    def decode(cls, packet):
-        if not packet:
-            raise ValueError('No payload in game message')
-        subtype_index = packet[0]
-        if subtype_index == 2:
-            return LoadTubePacket.decode(packet)
-        raise SoftDecodeFailure()
-
-class LoadTubePacket(ShipAction2Packet):
-    def __init__(self, tube, ordnance):
-        self.tube = tube
-        self.ordnance = ordnance
-
-    def encode(self):
-        return pack('IIIII', 2, self.tube, self.ordnance.value, 0, 0)
-
-    @classmethod
-    def decode(cls, packet):
-        _id, tube, ord, _unk1, _unk2 = unpack('IIIII', packet)
-        return cls(tube, OrdnanceType(ord))
-
-    def __str__(self):
-        return '<LoadTubePacket tube={0} ordnance={1!r}>'.format(self.tube, self.ordnance)
 
 @packet(0x0351a5ac)
 class ShipAction3Packet:

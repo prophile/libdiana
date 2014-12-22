@@ -416,34 +416,6 @@ def test_console_decode():
     eq_(pp.console, p.Console.science)
     eq_(pp.selected, False)
 
-def test_load_tube_encode():
-    pp = p.LoadTubePacket(2, p.OrdnanceType.nuke)
-    eq_(pp.encode(), b'\x02\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
-
-def test_load_tube_decode():
-    pp = p.ShipAction2Packet.decode(b'\x02\x00\x00\x00\x02\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
-    assert isinstance(pp, p.LoadTubePacket)
-    eq_(pp.tube, 2)
-    eq_(pp.ordnance, p.OrdnanceType.nuke)
-
-def test_unload_tube_encode():
-    pp = p.UnloadTubePacket(2)
-    eq_(pp.encode(), b'\x09\x00\x00\x00\x02\x00\x00\x00')
-
-def test_unload_tube_decode():
-    pp = p.ShipAction1Packet.decode(b'\x09\x00\x00\x00\x02\x00\x00\x00')
-    assert isinstance(pp, p.UnloadTubePacket)
-    eq_(pp.tube, 2)
-
-def test_fire_tube_encode():
-    pp = p.FireTubePacket(2)
-    eq_(pp.encode(), b'\x08\x00\x00\x00\x02\x00\x00\x00')
-
-def test_fire_tube_decode():
-    pp = p.ShipAction1Packet.decode(b'\x08\x00\x00\x00\x02\x00\x00\x00')
-    assert isinstance(pp, p.FireTubePacket)
-    eq_(pp.tube, 2)
-
 def test_dock_encode():
     pp = p.HelmRequestDockPacket()
     eq_(pp.encode(), b'\x07\x00\x00\x00\x00\x00\x00\x00')
