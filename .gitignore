@@ -4,5 +4,5 @@ build
 dist
 libdiana.egg-info
 setuptools-*.zip
-setuptools-*.egg
+*.egg
 .eggs
