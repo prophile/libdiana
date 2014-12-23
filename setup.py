@@ -6,7 +6,7 @@ if sys.version < '3.4':
 
 from setuptools import setup, find_packages
 
-with open('README.md') as f:
+with open('README.rst') as f:
     description = f.read()
 
 from diana import VERSION
