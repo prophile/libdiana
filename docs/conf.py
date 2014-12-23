@@ -8,7 +8,10 @@ import subprocess
 
 sys.path.insert(0, os.path.abspath('..'))
 
-extensions = []
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.viewcode'
+]
 templates_path = []
 source_suffix = '.rst'
 source_encoding = 'utf-8'
